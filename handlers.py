@@ -1,6 +1,7 @@
 from piston.handler import BaseHandler
 from sumatra.recordstore.django_store import models
 import datetime
+from django.core.urlresolvers import reverse
 
 """
 Note that in the Wikipedia REST article, the verb table differs slightly from
@@ -25,13 +26,17 @@ def build_filter(**kwargs):
     filter['group'] = kwargs['group']
     return filter
 
+
 class RecordHandler(BaseHandler):
     allowed_methods = ('GET', 'PUT', 'DELETE')
     model = models.SimulationRecord
-    fields = ('project', 'group', 'timestamp', 'reason', 'outcome', 'duration',
+    fields = ('group', 'timestamp', 'reason', 'outcome', 'duration',
               'executable', 'repository', 'main_file', 'version', 'diff',
               'dependencies', 'parameters', 'launch_mode', 'datastore',
               'data_key', 'platforms', 'tags')
+    
+    def queryset(self, request): # this is already defined in more recent versions of Piston
+        return self.model.objects.all()
     
     def read(self, request, project, group, year, month, day, hour, minute, second):
         filter = build_filter(**locals())
@@ -40,7 +45,7 @@ class RecordHandler(BaseHandler):
     def update(self, request, project, group, year, month, day, hour, minute, second):
         # this performs update if the record already exists, and create otherwise
         filter = build_filter(locals())
-        attrs = self.flatten_dict(request.data)
+        attrs = self.flatten_dict(request.data)()
         try:
             # need to check consistency between URL project, group, timestamp
             # and the same information in request.data
@@ -60,7 +65,49 @@ class RecordHandler(BaseHandler):
     def delete(self, request, project, group, year, month, day, hour, minute, second):
         filter = build_filter(locals())
         return BaseHandler.delete(self, request, **filter)
+
+
+
+class ProjectHandler(BaseHandler):
+    allowed_methods = ('GET',)
     
+    def read(self, request, project):
+        prj = models.Project.objects.get(id=project)
+        return {
+                    'name': prj.name,
+                    'description': prj.description,
+                    'groups': [ "http://%s%s" % (request.get_host(),
+                                                 reverse("sumatra-simulation-group", args=[project, g]))
+                                for g in prj.groups()]
+                }
+
+
+class ProjectListHandler(BaseHandler):
+    allowed_methods = ('GET',)
+    
+    def read(self, request):
+        return [ {
+                    "name": prj.name,
+                    "description": prj.description,
+                    "uri": "http://%s%s" % (request.get_host(), reverse("sumatra-project", args=[prj.id])),
+                 }
+                for prj in models.Project.objects.all() ]
+
+
+class GroupHandler(BaseHandler):
+    allowed_methods = ('GET',)
+    
+    def read(self, request, project, group):
+        prj = models.Project.objects.get(id=project)
+        project_uri = "http://%s%s" % (request.get_host(), reverse("sumatra-project", args=[prj.id]))
+        return {
+                    "name": group,
+                    "project": project_uri,
+                    "records": [ "%s%s/%s" % (project_uri, group, rec.timestamp.strftime("%Y%m%d-%H%M%S"))
+                                for rec in prj.simulationrecord_set.filter(group=group)],
+               }
+                
+
 
 # the following are currently defined only to suppress the 'id'
 # in the output
