@@ -2,6 +2,7 @@ from piston.handler import BaseHandler
 from sumatra.recordstore.django_store import models
 import datetime
 from django.core.urlresolvers import reverse
+from django.db.models import ForeignKey
 
 """
 Note that in the Wikipedia REST article, the verb table differs slightly from
@@ -33,7 +34,7 @@ class RecordHandler(BaseHandler):
     fields = ('group', 'timestamp', 'reason', 'outcome', 'duration',
               'executable', 'repository', 'main_file', 'version', 'diff',
               'dependencies', 'parameters', 'launch_mode', 'datastore',
-              'data_key', 'platforms', 'tags')
+              'data_key', 'platforms', 'tags', 'user')
     
     def queryset(self, request): # this is already defined in more recent versions of Piston
         return self.model.objects.all()
@@ -44,20 +45,37 @@ class RecordHandler(BaseHandler):
     
     def update(self, request, project, group, year, month, day, hour, minute, second):
         # this performs update if the record already exists, and create otherwise
-        filter = build_filter(locals())
-        attrs = self.flatten_dict(request.data)()
+        filter = build_filter(**locals())
+        attrs = self.flatten_dict(request.data)
+        print attrs
         try:
             # need to check consistency between URL project, group, timestamp
             # and the same information in request.data
             # we should also limit the fields that can be updated
             inst = self.queryset(request).get(**filter)
-            for k,v in attrs.iteritems(): # not sure this handles foreign key fields
-                setattr(inst, k, v)
-            inst.save()
+#            for k,v in attrs.iteritems(): # this does not handle foreign key fields
+#                setattr(inst, k, v)
+#            inst.save()
             return rc.ALL_OK
         except self.model.DoesNotExist:
-            inst = self.model(**attrs) # not sure this handles foreign key fields
+            # check consistency between URL project, group, timestamp
+            # and the same information in attrs. Remove those items from attrs
+            inst = self.model(**filter)
+            
+            # instead of the below, we could iterate over _meta.fields and _meta.many_to_many, and ignore any un-needed keys in attrs
+            for name, value in attrs.items():
+                field, model, direct, m2m = self.model._meta.get_field_by_name(name) # get_field is very similar
+                if isinstance(field, ForeignKey):
+                    fk_model = field.rel.to
+                    fk_inst, created = fk_model.get_or_create(**value)
+                    setattr(inst, name, fk_inst)
+                elif m2m:
+                    # get or create m2m obj
+                    # add to attr
+                else:
+                    setattr(inst, name, value)
             inst.save()
+            # now iterate over the m2m fields
             return rc.CREATED
         except self.model.MultipleObjectsReturned: # this should never happen
             return rc.DUPLICATE_ENTRY
