@@ -1,4 +1,5 @@
 from piston.handler import BaseHandler
+from piston.utils import rc
 from sumatra.recordstore.django_store import models
 import datetime
 from django.core.urlresolvers import reverse
@@ -17,15 +18,25 @@ using it.
 one_second = datetime.timedelta(0, 1)
 
 def build_filter(**kwargs):
-    D = {}
-    for key in 'year', 'month', 'day', 'hour', 'minute', 'second':
-        D[key] = int(kwargs[key])
-    timestamp = datetime.datetime(**D)
+    timestamp = build_timestamp(**kwargs)
     filter = {'timestamp__gte': timestamp,
               'timestamp__lt': timestamp + one_second}
     filter['project'] = kwargs['project']
     filter['group'] = kwargs['group']
     return filter
+
+def build_timestamp(**kwargs):
+    D = {}
+    for key in 'year', 'month', 'day', 'hour', 'minute', 'second':
+        D[key] = int(kwargs[key])
+    return datetime.datetime(**D)
+
+def keys2str(D):
+    """Keywords cannot be unicode."""
+    E = {}
+    for k,v in D.items():
+        E[str(k)] = v
+    return E
 
 
 class RecordHandler(BaseHandler):
@@ -60,22 +71,24 @@ class RecordHandler(BaseHandler):
         except self.model.DoesNotExist:
             # check consistency between URL project, group, timestamp
             # and the same information in attrs. Remove those items from attrs
-            inst = self.model(**filter)
-            
-            # instead of the below, we could iterate over _meta.fields and _meta.many_to_many, and ignore any un-needed keys in attrs
-            for name, value in attrs.items():
-                field, model, direct, m2m = self.model._meta.get_field_by_name(name) # get_field is very similar
+            prj, created = models.Project.objects.get_or_create(id=filter["project"])
+            inst = self.model(project=prj, group=group, timestamp=build_timestamp(**locals()))
+            fields = [field for field in self.model._meta.fields if field.name not in ('project', 'group', 'timestamp', 'id', 'db_id', 'tags')] # tags excluded temporarily because it's complicated
+            for field in fields:
                 if isinstance(field, ForeignKey):
                     fk_model = field.rel.to
-                    fk_inst, created = fk_model.get_or_create(**value)
-                    setattr(inst, name, fk_inst)
-                elif m2m:
-                    # get or create m2m obj
-                    # add to attr
+                    obj_attrs = keys2str(attrs[field.name])
+                    print field.name, fk_model, obj_attrs
+                    fk_inst, created = fk_model.objects.get_or_create(**obj_attrs)
+                    setattr(inst, field.name, fk_inst)
                 else:
-                    setattr(inst, name, value)
+                    print field.name, attrs[field.name], type(attrs[field.name])
+                    setattr(inst, field.name, attrs[field.name])
             inst.save()
-            # now iterate over the m2m fields
+            for field in self.model._meta.many_to_many:
+                for obj_attrs in attrs[field.name]:
+                    getattr(inst, field.name).get_or_create(**keys2str(obj_attrs))
+            inst.save()
             return rc.CREATED
         except self.model.MultipleObjectsReturned: # this should never happen
             return rc.DUPLICATE_ENTRY
