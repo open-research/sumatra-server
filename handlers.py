@@ -58,15 +58,16 @@ class RecordHandler(BaseHandler):
         # this performs update if the record already exists, and create otherwise
         filter = build_filter(**locals())
         attrs = self.flatten_dict(request.data)
-        print attrs
+        #print attrs
         try:
             # need to check consistency between URL project, group, timestamp
             # and the same information in request.data
             # we should also limit the fields that can be updated
+            updatable_fields = ('reason', 'outcome') # tags
             inst = self.queryset(request).get(**filter)
-#            for k,v in attrs.iteritems(): # this does not handle foreign key fields
-#                setattr(inst, k, v)
-#            inst.save()
+            for field_name in updatable_fields:
+                setattr(inst, field_name, attrs[field_name])
+            inst.save()
             return rc.ALL_OK
         except self.model.DoesNotExist:
             # check consistency between URL project, group, timestamp
