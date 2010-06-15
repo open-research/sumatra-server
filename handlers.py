@@ -4,6 +4,9 @@ from sumatra.recordstore.django_store import models
 import datetime
 from django.core.urlresolvers import reverse
 from django.db.models import ForeignKey
+from django.shortcuts import get_object_or_404
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse
 
 """
 Note that in the Wikipedia REST article, the verb table differs slightly from
@@ -52,7 +55,10 @@ class RecordHandler(BaseHandler):
     
     def read(self, request, project, group, year, month, day, hour, minute, second):
         filter = build_filter(**locals())
-        return self.queryset(request).get(**filter)
+        try:
+            return self.queryset(request).get(**filter)
+        except ObjectDoesNotExist:
+            return rc.NOT_FOUND
     
     def update(self, request, project, group, year, month, day, hour, minute, second):
         # this performs update if the record already exists, and create otherwise
@@ -73,7 +79,9 @@ class RecordHandler(BaseHandler):
             # check consistency between URL project, group, timestamp
             # and the same information in attrs. Remove those items from attrs
             prj, created = models.Project.objects.get_or_create(id=filter["project"])
-            inst = self.model(project=prj, group=group, timestamp=build_timestamp(**locals()))
+            timestamp = build_timestamp(**locals())
+            inst = self.model(project=prj, group=group, timestamp=timestamp)
+            inst.id = "%s_%s" % (group, timestamp.strftime("%Y%m%d-%H%M%S"))
             fields = [field for field in self.model._meta.fields if field.name not in ('project', 'group', 'timestamp', 'id', 'db_id', 'tags')] # tags excluded temporarily because it's complicated
             for field in fields:
                 if isinstance(field, ForeignKey):
@@ -95,7 +103,7 @@ class RecordHandler(BaseHandler):
             return rc.DUPLICATE_ENTRY
 
     def delete(self, request, project, group, year, month, day, hour, minute, second):
-        filter = build_filter(locals())
+        filter = build_filter(**locals())
         return BaseHandler.delete(self, request, **filter)
 
 
@@ -127,7 +135,7 @@ class ProjectListHandler(BaseHandler):
 
 
 class GroupHandler(BaseHandler):
-    allowed_methods = ('GET',)
+    allowed_methods = ('GET', 'DELETE')
     
     def read(self, request, project, group):
         prj = models.Project.objects.get(id=project)
@@ -139,7 +147,13 @@ class GroupHandler(BaseHandler):
                                 for rec in prj.simulationrecord_set.filter(group=group)],
                }
                 
-
+    def delete(self, request, project, group):
+        records = models.SimulationRecord.objects.filter(project__id=project,
+                                                         group=group)
+        n = records.count()
+        for record in records:
+            record.delete()
+        return HttpResponse(str(n), content_type='text/plain', status=200) # can't return 204, because that can't contain a body, and we need to return the number of records deleted
 
 # the following are currently defined only to suppress the 'id'
 # in the output
