@@ -1,10 +1,13 @@
 from django.conf.urls.defaults import *
 from piston.resource import Resource
+from piston.authentication import HttpBasicAuthentication
 from sumatra_piston.handlers import RecordHandler, ProjectHandler, ProjectListHandler, GroupHandler
 
-record_resource = Resource(RecordHandler)
-group_resource = Resource(GroupHandler)
-project_resource = Resource(ProjectHandler)
+auth = HttpBasicAuthentication(realm='Sumatra Server API')
+
+record_resource = Resource(RecordHandler, authentication=auth)
+group_resource = Resource(GroupHandler, authentication=auth)
+project_resource = Resource(ProjectHandler, authentication=auth)
 
 urlpatterns = patterns('',
     url(r'^$', Resource(ProjectListHandler)),

@@ -42,6 +42,15 @@ def keys2str(D):
     return E
 
 
+def check_permissions(func):
+    def wrapper(self, request, project, *args, **kwargs):
+        if request.user.projectpermission_set.filter(project__id=project).count():
+            return func(self, request, project, *args, **kwargs)
+        else:
+            return rc.FORBIDDEN
+    return wrapper
+
+
 class RecordHandler(BaseHandler):
     allowed_methods = ('GET', 'PUT', 'DELETE')
     model = models.SimulationRecord
@@ -53,6 +62,7 @@ class RecordHandler(BaseHandler):
     def queryset(self, request): # this is already defined in more recent versions of Piston
         return self.model.objects.all()
     
+    @check_permissions
     def read(self, request, project, group, year, month, day, hour, minute, second):
         filter = build_filter(**locals())
         try:
@@ -60,6 +70,7 @@ class RecordHandler(BaseHandler):
         except ObjectDoesNotExist:
             return rc.NOT_FOUND
     
+    @check_permissions
     def update(self, request, project, group, year, month, day, hour, minute, second):
         # this performs update if the record already exists, and create otherwise
         filter = build_filter(**locals())
@@ -79,6 +90,8 @@ class RecordHandler(BaseHandler):
             # check consistency between URL project, group, timestamp
             # and the same information in attrs. Remove those items from attrs
             prj, created = models.Project.objects.get_or_create(id=filter["project"])
+            if created:
+                prj.projectpermission_set.create(user=request.user)
             timestamp = build_timestamp(**locals())
             inst = self.model(project=prj, group=group, timestamp=timestamp)
             inst.id = "%s_%s" % (group, timestamp.strftime("%Y%m%d-%H%M%S"))
@@ -102,6 +115,7 @@ class RecordHandler(BaseHandler):
         except self.model.MultipleObjectsReturned: # this should never happen
             return rc.DUPLICATE_ENTRY
 
+    @check_permissions
     def delete(self, request, project, group, year, month, day, hour, minute, second):
         filter = build_filter(**locals())
         return BaseHandler.delete(self, request, **filter)
@@ -111,14 +125,19 @@ class RecordHandler(BaseHandler):
 class ProjectHandler(BaseHandler):
     allowed_methods = ('GET',)
     
+    
     def read(self, request, project):
-        prj = models.Project.objects.get(id=project)
+        try:
+            prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
+        except models.Project.DoesNotExist:
+            return rc.FORBIDDEN
         return {
                     'name': prj.name,
                     'description': prj.description,
                     'groups': [ "http://%s%s" % (request.get_host(),
                                                  reverse("sumatra-simulation-group", args=[project, g]))
-                                for g in prj.groups()]
+                                for g in prj.groups()],
+                    'access': [perm.user.username for perm in prj.projectpermission_set.all()]
                 }
 
 
@@ -131,14 +150,21 @@ class ProjectListHandler(BaseHandler):
                     "description": prj.description,
                     "uri": "http://%s%s" % (request.get_host(), reverse("sumatra-project", args=[prj.id])),
                  }
-                for prj in models.Project.objects.all() ]
+                for prj in models.Project.objects.filter(project_permission__user=request.user) ]
 
 
 class GroupHandler(BaseHandler):
     allowed_methods = ('GET', 'DELETE')
     
+    @check_permissions
     def read(self, request, project, group):
-        prj = models.Project.objects.get(id=project)
+        # possibly we should do the following in two stages, first see if
+        # the project exists (return rc.NOT_HERE if not), then check for
+        # permissions (and return rc.FORBIDDEN)
+        try:
+            prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
+        except models.Project.DoesNotExist:
+            return rc.FORBIDDEN
         project_uri = "http://%s%s" % (request.get_host(), reverse("sumatra-project", args=[prj.id]))
         return {
                     "name": group,
@@ -146,9 +172,14 @@ class GroupHandler(BaseHandler):
                     "records": [ "%s%s/%s" % (project_uri, group, rec.timestamp.strftime("%Y%m%d-%H%M%S"))
                                 for rec in prj.simulationrecord_set.filter(group=group)],
                }
-                
+    
+    @check_permissions
     def delete(self, request, project, group):
-        records = models.SimulationRecord.objects.filter(project__id=project,
+        try:
+            prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
+        except models.Project.DoesNotExist:
+            return rc.FORBIDDEN
+        records = models.SimulationRecord.objects.filter(project=prj,
                                                          group=group)
         n = records.count()
         for record in records:
