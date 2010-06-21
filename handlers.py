@@ -58,6 +58,7 @@ class RecordHandler(BaseHandler):
               'executable', 'repository', 'main_file', 'version', 'diff',
               'dependencies', 'parameters', 'launch_mode', 'datastore',
               'data_key', 'platforms', 'tags', 'user')
+    template = "record_detail.html"
     
     def queryset(self, request): # this is already defined in more recent versions of Piston
         return self.model.objects.all()
@@ -124,7 +125,7 @@ class RecordHandler(BaseHandler):
 
 class ProjectHandler(BaseHandler):
     allowed_methods = ('GET',)
-    
+    template = "project_detail.html"
     
     def read(self, request, project):
         try:
@@ -143,6 +144,7 @@ class ProjectHandler(BaseHandler):
 
 class ProjectListHandler(BaseHandler):
     allowed_methods = ('GET',)
+    template = "project_list.html"
     
     def read(self, request):
         return [ {
@@ -150,11 +152,12 @@ class ProjectListHandler(BaseHandler):
                     "description": prj.description,
                     "uri": "http://%s%s" % (request.get_host(), reverse("sumatra-project", args=[prj.id])),
                  }
-                for prj in models.Project.objects.filter(project_permission__user=request.user) ]
+                for prj in models.Project.objects.filter(projectpermission__user=request.user) ]
 
 
 class GroupHandler(BaseHandler):
     allowed_methods = ('GET', 'DELETE')
+    template = "group_detail.html"
     
     @check_permissions
     def read(self, request, project, group):
@@ -216,3 +219,5 @@ class PlatformHandler(BaseHandler):
 class DependencyHandler(BaseHandler):
     allowed_methods = []
     model = models.Dependency
+
+# note: if we start to look at the Accept header, should send 406 response if we can't send the requested mimetype (RFC 2616)
