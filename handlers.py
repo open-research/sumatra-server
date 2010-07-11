@@ -20,13 +20,15 @@ using it.
 
 one_second = datetime.timedelta(0, 1)
 
+#def build_filter(**kwargs):
+#    timestamp = build_timestamp(**kwargs)
+#    filter = {'timestamp__gte': timestamp,
+#              'timestamp__lt': timestamp + one_second}
+#    filter['project'] = kwargs['project']
+#    filter['group'] = kwargs['group']
+#    return filter
 def build_filter(**kwargs):
-    timestamp = build_timestamp(**kwargs)
-    filter = {'timestamp__gte': timestamp,
-              'timestamp__lt': timestamp + one_second}
-    filter['project'] = kwargs['project']
-    filter['group'] = kwargs['group']
-    return filter
+    return kwargs
 
 def build_timestamp(**kwargs):
     D = {}
@@ -53,8 +55,8 @@ def check_permissions(func):
 
 class RecordHandler(BaseHandler):
     allowed_methods = ('GET', 'PUT', 'DELETE')
-    model = models.SimulationRecord
-    fields = ('group', 'timestamp', 'reason', 'outcome', 'duration',
+    model = models.Record
+    fields = ('label', 'timestamp', 'reason', 'outcome', 'duration',
               'executable', 'repository', 'main_file', 'version', 'diff',
               'dependencies', 'parameters', 'launch_mode', 'datastore',
               'data_key', 'platforms', 'tags', 'user')
@@ -64,17 +66,17 @@ class RecordHandler(BaseHandler):
         return self.model.objects.all()
     
     @check_permissions
-    def read(self, request, project, group, year, month, day, hour, minute, second):
-        filter = build_filter(**locals())
+    def read(self, request, project, label):
+        filter = {'project': project, 'label': label}
         try:
             return self.queryset(request).get(**filter)
         except ObjectDoesNotExist:
             return rc.NOT_FOUND
-    
+        
     @check_permissions
-    def update(self, request, project, group, year, month, day, hour, minute, second):
+    def update(self, request, project, label):
         # this performs update if the record already exists, and create otherwise
-        filter = build_filter(**locals())
+        filter = {'project': project, 'label': label}
         attrs = self.flatten_dict(request.data)
         #print attrs
         try:
@@ -88,24 +90,23 @@ class RecordHandler(BaseHandler):
             inst.save()
             return rc.ALL_OK
         except self.model.DoesNotExist:
-            # check consistency between URL project, group, timestamp
+            # check consistency between URL project, label
             # and the same information in attrs. Remove those items from attrs
+            assert label == attrs["label"]
             prj, created = models.Project.objects.get_or_create(id=filter["project"])
             if created:
                 prj.projectpermission_set.create(user=request.user)
-            timestamp = build_timestamp(**locals())
-            inst = self.model(project=prj, group=group, timestamp=timestamp)
-            inst.id = "%s_%s" % (group, timestamp.strftime("%Y%m%d-%H%M%S"))
-            fields = [field for field in self.model._meta.fields if field.name not in ('project', 'group', 'timestamp', 'id', 'db_id', 'tags')] # tags excluded temporarily because it's complicated
+            inst = self.model(project=prj, label=label)
+            fields = [field for field in self.model._meta.fields if field.name not in ('project', 'label', 'db_id')]
             for field in fields:
                 if isinstance(field, ForeignKey):
                     fk_model = field.rel.to
                     obj_attrs = keys2str(attrs[field.name])
-                    print field.name, fk_model, obj_attrs
+                    ##print field.name, fk_model, obj_attrs
                     fk_inst, created = fk_model.objects.get_or_create(**obj_attrs)
                     setattr(inst, field.name, fk_inst)
                 else:
-                    print field.name, attrs[field.name], type(attrs[field.name])
+                    ##print field.name, attrs[field.name], type(attrs[field.name])
                     setattr(inst, field.name, attrs[field.name])
             inst.save()
             for field in self.model._meta.many_to_many:
@@ -117,10 +118,9 @@ class RecordHandler(BaseHandler):
             return rc.DUPLICATE_ENTRY
 
     @check_permissions
-    def delete(self, request, project, group, year, month, day, hour, minute, second):
-        filter = build_filter(**locals())
+    def delete(self, request, project, label):
+        filter = {'project': project, 'label': label}
         return BaseHandler.delete(self, request, **filter)
-
 
 
 class ProjectHandler(BaseHandler):
@@ -132,12 +132,13 @@ class ProjectHandler(BaseHandler):
             prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
         except models.Project.DoesNotExist:
             return rc.FORBIDDEN
+        project_uri = "http://%s%s" % (request.get_host(), reverse("sumatra-project", args=[prj.id]))
         return {
+                    'id': prj.id,
                     'name': prj.name,
                     'description': prj.description,
-                    'groups': [ "http://%s%s" % (request.get_host(),
-                                                 reverse("sumatra-simulation-group", args=[project, g]))
-                                for g in prj.groups()],
+                    'records': [ "%s%s/" % (project_uri, rec.label)
+                                for rec in prj.record_set.all()],
                     'access': [perm.user.username for perm in prj.projectpermission_set.all()]
                 }
 
@@ -148,6 +149,7 @@ class ProjectListHandler(BaseHandler):
     
     def read(self, request):
         return [ {
+                    "id": prj.id,
                     "name": prj.name,
                     "description": prj.description,
                     "uri": "http://%s%s" % (request.get_host(), reverse("sumatra-project", args=[prj.id])),
@@ -155,39 +157,39 @@ class ProjectListHandler(BaseHandler):
                 for prj in models.Project.objects.filter(projectpermission__user=request.user) ]
 
 
-class GroupHandler(BaseHandler):
-    allowed_methods = ('GET', 'DELETE')
-    template = "group_detail.html"
-    
-    @check_permissions
-    def read(self, request, project, group):
-        # possibly we should do the following in two stages, first see if
-        # the project exists (return rc.NOT_HERE if not), then check for
-        # permissions (and return rc.FORBIDDEN)
-        try:
-            prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
-        except models.Project.DoesNotExist:
-            return rc.FORBIDDEN
-        project_uri = "http://%s%s" % (request.get_host(), reverse("sumatra-project", args=[prj.id]))
-        return {
-                    "name": group,
-                    "project": project_uri,
-                    "records": [ "%s%s/%s" % (project_uri, group, rec.timestamp.strftime("%Y%m%d-%H%M%S"))
-                                for rec in prj.simulationrecord_set.filter(group=group)],
-               }
-    
-    @check_permissions
-    def delete(self, request, project, group):
-        try:
-            prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
-        except models.Project.DoesNotExist:
-            return rc.FORBIDDEN
-        records = models.SimulationRecord.objects.filter(project=prj,
-                                                         group=group)
-        n = records.count()
-        for record in records:
-            record.delete()
-        return HttpResponse(str(n), content_type='text/plain', status=200) # can't return 204, because that can't contain a body, and we need to return the number of records deleted
+#class GroupHandler(BaseHandler):
+#    allowed_methods = ('GET', 'DELETE')
+#    template = "group_detail.html"
+#    
+#    @check_permissions
+#    def read(self, request, project, group):
+#        # possibly we should do the following in two stages, first see if
+#        # the project exists (return rc.NOT_HERE if not), then check for
+#        # permissions (and return rc.FORBIDDEN)
+#        try:
+#            prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
+#        except models.Project.DoesNotExist:
+#            return rc.FORBIDDEN
+#        project_uri = "http://%s%s" % (request.get_host(), reverse("sumatra-project", args=[prj.id]))
+#        return {
+#                    "name": group,
+#                    "project": project_uri,
+#                    "records": [ "%s%s/%s" % (project_uri, group, rec.timestamp.strftime("%Y%m%d-%H%M%S"))
+#                                for rec in prj.simulationrecord_set.filter(group=group)],
+#               }
+#    
+#    @check_permissions
+#    def delete(self, request, project, group):
+#        try:
+#            prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
+#        except models.Project.DoesNotExist:
+#            return rc.FORBIDDEN
+#        records = models.Record.objects.filter(project=prj,
+#                                               group=group)
+#        n = records.count()
+#        for record in records:
+#            record.delete()
+#        return HttpResponse(str(n), content_type='text/plain', status=200) # can't return 204, because that can't contain a body, and we need to return the number of records deleted
 
 # the following are currently defined only to suppress the 'id'
 # in the output
