@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Project {{data.name}}{% endblock %}
+
+{% block header %}Project {{data.name}}{% endblock %}
+
+{% block content %}
+
+<p>{{data.description}}</p>
+<p>This project is accessible to {{data.access}}</p>
+
+<p>This project contains the following records:</p>
+
+<ul>
+    {% for record in data.records %}
+    <li><a href="{{record}}">{{record}}</a></li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
