@@ -6,12 +6,10 @@ from sumatra_piston.handlers import RecordHandler, ProjectHandler, ProjectListHa
 auth = HttpBasicAuthentication(realm='Sumatra Server API')
 
 record_resource = Resource(RecordHandler, authentication=auth)
-#group_resource = Resource(GroupHandler, authentication=auth)
 project_resource = Resource(ProjectHandler, authentication=auth)
 
 urlpatterns = patterns('',
     url(r'^$', Resource(ProjectListHandler), name="sumatra-project-list"),
     url(r'^(?P<project>[^/]+)/$', project_resource, name="sumatra-project"),
-    #url(r'^(?P<project>[^/]+)/(?P<group>[^/]+)/$', group_resource, name="sumatra-simulation-group"),
     url(r'^(?P<project>[^/]+)/(?P<label>\w+[\w|\-\.]*)/$', record_resource, name="sumatra-record"),
 )

@@ -18,17 +18,6 @@ to create a new resource. The Wikipedia approach seems more logical to me, so I'
 using it.
 """
 
-one_second = datetime.timedelta(0, 1)
-
-#def build_filter(**kwargs):
-#    timestamp = build_timestamp(**kwargs)
-#    filter = {'timestamp__gte': timestamp,
-#              'timestamp__lt': timestamp + one_second}
-#    filter['project'] = kwargs['project']
-#    filter['group'] = kwargs['group']
-#    return filter
-def build_filter(**kwargs):
-    return kwargs
 
 def build_timestamp(**kwargs):
     D = {}
@@ -42,7 +31,6 @@ def keys2str(D):
     for k,v in D.items():
         E[str(k)] = v
     return E
-
 
 def check_permissions(func):
     def wrapper(self, request, project, *args, **kwargs):
@@ -156,40 +144,6 @@ class ProjectListHandler(BaseHandler):
                  }
                 for prj in models.Project.objects.filter(projectpermission__user=request.user) ]
 
-
-#class GroupHandler(BaseHandler):
-#    allowed_methods = ('GET', 'DELETE')
-#    template = "group_detail.html"
-#    
-#    @check_permissions
-#    def read(self, request, project, group):
-#        # possibly we should do the following in two stages, first see if
-#        # the project exists (return rc.NOT_HERE if not), then check for
-#        # permissions (and return rc.FORBIDDEN)
-#        try:
-#            prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
-#        except models.Project.DoesNotExist:
-#            return rc.FORBIDDEN
-#        project_uri = "http://%s%s" % (request.get_host(), reverse("sumatra-project", args=[prj.id]))
-#        return {
-#                    "name": group,
-#                    "project": project_uri,
-#                    "records": [ "%s%s/%s" % (project_uri, group, rec.timestamp.strftime("%Y%m%d-%H%M%S"))
-#                                for rec in prj.simulationrecord_set.filter(group=group)],
-#               }
-#    
-#    @check_permissions
-#    def delete(self, request, project, group):
-#        try:
-#            prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
-#        except models.Project.DoesNotExist:
-#            return rc.FORBIDDEN
-#        records = models.Record.objects.filter(project=prj,
-#                                               group=group)
-#        n = records.count()
-#        for record in records:
-#            record.delete()
-#        return HttpResponse(str(n), content_type='text/plain', status=200) # can't return 204, because that can't contain a body, and we need to return the number of records deleted
 
 # the following are currently defined only to suppress the 'id'
 # in the output
