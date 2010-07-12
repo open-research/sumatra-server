@@ -108,7 +108,10 @@ class RecordHandler(BaseHandler):
     @check_permissions
     def delete(self, request, project, label):
         filter = {'project': project, 'label': label}
-        return BaseHandler.delete(self, request, **filter)
+        response = BaseHandler.delete(self, request, **filter)
+        if response.status_code == 410: # Using 404 instead of 410 if resource doesn't exist
+            response = rc.NOT_FOUND # to me 'Gone' implies it used to exist, and we can't say that for sure
+        return response
 
 
 class ProjectHandler(BaseHandler):
