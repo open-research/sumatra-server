@@ -5,7 +5,7 @@ available_emitters = dict(
     ((ct.split(";")[0], em)
       for em, (_, ct) in Emitter.EMITTERS.iteritems())
 )
-##print "AVAILABLE:", available_emitters
+print "AVAILABLE:", available_emitters
 
 def get_emitters_from_accept_header(request):
     if 'HTTP_ACCEPT' in request.META:
@@ -16,13 +16,14 @@ def get_emitters_from_accept_header(request):
         accept = ""
     possible_emitters = []
     if accept:
-        ##print "ACCEPT:", accept
-        accepted_contenttypes = accept.split(";")
+        print "ACCEPT:", accept
+        accepted_contenttypes = (ct.split(";")[0] for ct in accept.split(","))
         for ct in accepted_contenttypes:
             if ct in available_emitters:
                 possible_emitters.append(available_emitters[ct])
-        ##print "POSSIBLE:", possible_emitters
+        print "POSSIBLE:", possible_emitters
     return possible_emitters
+
 
 class Resource(piston.resource.Resource):
     
