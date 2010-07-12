@@ -7,6 +7,7 @@ from django.db.models import ForeignKey
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
+from django.contrib.auth.models import User
 
 """
 Note that in the Wikipedia REST article, the verb table differs slightly from
@@ -47,11 +48,15 @@ class RecordHandler(BaseHandler):
     fields = ('label', 'timestamp', 'reason', 'outcome', 'duration',
               'executable', 'repository', 'main_file', 'version', 'diff',
               'dependencies', 'parameters', 'launch_mode', 'datastore',
-              'data_key', 'platforms', 'tags', 'user')
+              'data_key', 'platforms', 'tags', 'user', 'project_id')
     template = "record_detail.html"
     
     def queryset(self, request): # this is already defined in more recent versions of Piston
         return self.model.objects.all()
+    
+    @classmethod
+    def project_id(self, record):
+        return record.project.id
     
     @check_permissions
     def read(self, request, project, label):
@@ -139,14 +144,18 @@ class ProjectListHandler(BaseHandler):
     template = "project_list.html"
     
     def read(self, request):
+        if request.user.is_anonymous():
+            user, _ = User.objects.get_or_create(username="anonymous")
+        else:
+            user = request.user
         return [ {
                     "id": prj.id,
                     "name": prj.name,
                     "description": prj.description,
                     "uri": "http://%s%s" % (request.get_host(), reverse("sumatra-project", args=[prj.id])),
-                 }
-                for prj in models.Project.objects.filter(projectpermission__user=request.user) ]
-
+                  }
+                  for prj in models.Project.objects.filter(projectpermission__user=user) ]
+        
 
 # the following are currently defined only to suppress the 'id'
 # in the output
