@@ -83,7 +83,7 @@ class RecordHandler(BaseHandler):
             # need to check consistency between URL project, group, timestamp
             # and the same information in request.data
             # we should also limit the fields that can be updated
-            updatable_fields = ('reason', 'outcome') # tags
+            updatable_fields = ('reason', 'outcome', 'tags')
             inst = self.queryset(request).get(**filter)
             for field_name in updatable_fields:
                 setattr(inst, field_name, attrs[field_name])
