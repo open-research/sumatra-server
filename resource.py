@@ -25,14 +25,17 @@ def get_emitters_from_accept_header(request):
     return possible_emitters
 
 
-class Resource(piston.resource.Resource):
-    
-    def determine_emitter(self, request, *args, **kwargs):        
-        if "emitter_format" in kwargs:       
-            em = kwargs.pop('emitter_format', None)
-        elif "format" in request.GET:
-            em = request.GET['format']
-        else:
-            ems = get_emitters_from_accept_header(request)
-            em = ems and ems[0] or "json"
-        return em
+def determine_emitter(request, *args, **kwargs):        
+    if "emitter_format" in kwargs:       
+        em = kwargs.pop('emitter_format', None)
+    elif "format" in request.GET:
+        em = request.GET['format']
+    else:
+        ems = get_emitters_from_accept_header(request)
+        em = ems and ems[0] or "json"
+    return em
+
+
+class Resource(piston.resource.Resource):    
+    def determine_emitter(self, request, *args, **kwargs):
+        return determine_emitter(request, *args, **kwargs)
