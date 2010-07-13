@@ -131,7 +131,7 @@ class ProjectHandler(BaseHandler):
         project_uri = "http://%s%s" % (request.get_host(), reverse("sumatra-project", args=[prj.id]))
         return {
                     'id': prj.id,
-                    'name': prj.name,
+                    'name': prj.get_name(),
                     'description': prj.description,
                     'records': [ "%s%s/" % (project_uri, rec.label)
                                 for rec in prj.record_set.all()],
@@ -146,11 +146,12 @@ class ProjectListHandler(BaseHandler):
     def read(self, request):
         if request.user.is_anonymous():
             user, _ = User.objects.get_or_create(username="anonymous")
+            user.set_password("")
         else:
             user = request.user
         return [ {
                     "id": prj.id,
-                    "name": prj.name,
+                    "name": prj.get_name(),
                     "description": prj.description,
                     "uri": "http://%s%s" % (request.get_host(), reverse("sumatra-project", args=[prj.id])),
                   }

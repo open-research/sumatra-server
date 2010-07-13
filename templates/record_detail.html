@@ -4,12 +4,10 @@
 {% block title %}{{data.project_id}}: {{data.label}}{% endblock %}
 
 {% block header %}
-{{data.project_id}}: <i>{{data.label}}</i>
+<a href="..">{{data.project_id}}</a>: <i>{{data.label}}</i>
 {% endblock %}
 
 {% block content %}
-
-<p><a href="..">Return to list of records</a></p>
 
 <table>
     <tr><th>Label:</th><td>{{data.label}}</td></tr>
@@ -27,21 +25,21 @@
 
 </form>
 
-<h2>Data files</h2>
+<h3>Data files</h3>
 {{data.data_key}}
 
-<h2>Parameters</h2>
+<h3>Parameters</h3>
 {{data.parameters.content}}
                         
-<h2>Dependencies</h2>
-<table>
+<h3>Dependencies</h3>
+<table class="fullwidth">
 <tr><th>Name</th><th>Path</th><th>Version</th></tr>
 {% for dep in data.dependencies %}
 <tr class="{% cycle "odd" "even" %}"><td>{{dep.name}}</td><td>{{dep.path}}</td><td>{{dep.version}}{% if dep.diff %}* (<a href="diff/{{dep.name}}">diff</a>){% endif %}</td></tr>{% endfor %}
 </table>
 
-<h2>Platform information</h2>
-<table>
+<h3>Platform information</h3>
+<table class="fullwidth">
 <tr><th>Name</th><th>IP address</th><th>Processor</th>
     <th colspan="2">Architecture</th><th>System type</th>
     <th>Release</th><th>Version</th>

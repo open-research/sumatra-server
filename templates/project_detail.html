@@ -2,12 +2,12 @@
 
 {% block title %}Project {{data.name}}{% endblock %}
 
-{% block header %}Project {{data.name}}{% endblock %}
+{% block header %}{{data.name}}{% endblock %}
 
 {% block content %}
 
 <p>{{data.description}}</p>
-<p>This project is accessible to {{data.access}}</p>
+<p>This project is accessible to {{data.access|join:", "}}</p>
 
 <p>This project contains the following records:</p>
 

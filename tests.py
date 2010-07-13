@@ -114,7 +114,8 @@ class RecordHandlerTest(BaseTestCase):
                               "main_file","version","parameters",
                               "launch_mode","datastore","outcome",
                               "data_key","timestamp","tags","diff",
-                              "user","dependencies", "platforms")))
+                              "user","dependencies", "platforms",
+                              "project_id")))
         self.assertEqual(data["tags"], "foobar")
         
     def test_GET_format_html(self):
@@ -216,6 +217,7 @@ class RecordHandlerTest(BaseTestCase):
         response = self.client.get(rec_uri, {}, **self.extra)
         self.assertEqual(response.status_code, OK)
         #pprint(deunicode(json.loads(response.content)))
+        new_record.update(project_id="TestProject")
         self.assertEqual(new_record, deunicode(json.loads(response.content)))
         
     def test_PUT_existing_record_json(self):
