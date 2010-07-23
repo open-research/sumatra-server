@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load form_tags %}
+
+{% block title %}Project {{data.name}}{% endblock %}
+
+{% block header %}<a href="..">{{data.name}}</a>{% endblock %}
+
+{% block content %}
+
+<p>{{data.description}}</p>
+<p>This project is accessible to the following users:</p>
+<ul>
+    {% for user in data.access %}<li>{{user.username}}</li>{% endfor %}
+</ul>
+
+
+<p>You may grant access to other users:</p>
+
+<form action="." method="POST">{% csrf_token %}
+    {% insert_permission_form %}
+    <input type="Submit" value="Add access for this user"/>
+</form>
+
+
+{% endblock %}

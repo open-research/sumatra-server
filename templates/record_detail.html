@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load filters %}
 
 {% block title %}{{data.project_id}}: {{data.label}}{% endblock %}
 
@@ -20,7 +20,7 @@
     <tr><th>Repository:</th><td>{{data.repository.url}}</td></tr>
     <tr><th>Main file:</th><td>{{data.main_file}}</td></tr>
     <tr><th>Version:</th><td>{{data.version}}{% if data.diff %}* (<a href="diff/">diff</a>){% endif %}</td></tr>
-    <tr><th>Tags:</th><td>{{data.tags}}</td></tr>
+    <tr><th>Tags:</th><td>{{data.tags|link:"../?tags=%s"}}</td></tr>
 </table>
 
 </form>

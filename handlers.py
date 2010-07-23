@@ -1,13 +1,14 @@
 from piston.handler import BaseHandler
-from piston.utils import rc
+from piston.utils import rc, validate
 from sumatra.recordstore.django_store import models
 import datetime
 from django.core.urlresolvers import reverse
 from django.db.models import ForeignKey
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
+from forms import PermissionsForm
 
 """
 Note that in the Wikipedia REST article, the verb table differs slightly from
@@ -128,15 +129,46 @@ class ProjectHandler(BaseHandler):
             prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
         except models.Project.DoesNotExist:
             return rc.FORBIDDEN
-        project_uri = "http://%s%s" % (request.get_host(), reverse("sumatra-project", args=[prj.id]))
+        records = prj.record_set.all()
+        tags = request.GET.get("tags", None)
+        if tags:
+            records = records.filter(tags__contains=tags)
+        protocol = request.is_secure() and "https" or "http"
+        project_uri = "%s://%s%s" % (protocol, request.get_host(), reverse("sumatra-project", args=[prj.id]))
         return {
                     'id': prj.id,
                     'name': prj.get_name(),
                     'description': prj.description,
                     'records': [ "%s%s/" % (project_uri, rec.label)
-                                for rec in prj.record_set.all()],
-                    'access': [perm.user.username for perm in prj.projectpermission_set.all()]
+                                for rec in records],
+                    'access': [perm.user.username for perm in prj.projectpermission_set.all()],
+                    'tags': tags,
                 }
+
+
+class PermissionListHandler(BaseHandler):
+    allowed_methods = ('GET', 'POST',)
+    template = "project_permissions.html"
+    
+    def read(self, request, project):
+        try:
+            prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
+        except models.Project.DoesNotExist:
+            return rc.FORBIDDEN
+        return {
+                    'id': prj.id,
+                    'name': prj.get_name(),
+                    'access': [perm.user for perm in prj.projectpermission_set.all()],
+                }
+
+    @validate(PermissionsForm)
+    def create(self, request, project):
+        try:
+            prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
+        except models.Project.DoesNotExist:
+            return rc.FORBIDDEN
+        prj.projectpermission_set.create(user=request.form.cleaned_data["user"])
+        return HttpResponseRedirect(reverse("sumatra-project", args=[prj.id]))
 
 
 class ProjectListHandler(BaseHandler):
@@ -149,11 +181,12 @@ class ProjectListHandler(BaseHandler):
             user.set_password("")
         else:
             user = request.user
+        protocol = request.is_secure() and "https" or "http"
         return [ {
                     "id": prj.id,
                     "name": prj.get_name(),
                     "description": prj.description,
-                    "uri": "http://%s%s" % (request.get_host(), reverse("sumatra-project", args=[prj.id])),
+                    "uri": "%s://%s%s" % (protocol, request.get_host(), reverse("sumatra-project", args=[prj.id])),
                   }
                   for prj in models.Project.objects.filter(projectpermission__user=user) ]
         

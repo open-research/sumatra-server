@@ -9,12 +9,14 @@
 <p>{{data.description}}</p>
 <p>This project is accessible to {{data.access|join:", "}}</p>
 
-<p>This project contains the following records:</p>
+<p>This project contains {% if data.records %}the following{% else %}no{% endif %} records{% if data.tags %} tagged with <i>{{data.tags}}</i>{% endif %}:</p>
 
 <ul>
     {% for record in data.records %}
     <li><a href="{{record}}">{{record}}</a></li>
     {% endfor %}
 </ul>
+
+{% if data.tags %}<p><a href=".">Show all records</a></p>{% endif %}
 
 {% endblock %}
