@@ -1,0 +1,5 @@
+include sumatra_server/templates/*.html
+include sumatra_server/fixtures/*.json
+include README.rst
+include COPYING
+

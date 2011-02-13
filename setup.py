@@ -10,7 +10,8 @@ setup(
     description = "Sumatra Server is a Django app that implements an HTTP-based store for records of computational experiments.",
     author = 'Andrew Davison',
     author_email = 'andrew.davison@unic.cnrs-gif.fr',
-    packages = ['sumatra_server'],
+    packages = ['sumatra_server', 'sumatra_server.templatetags'],
+    package_data = {'sumatra_server': ["templates/*.html"]},
     classifiers = [
         'Development Status :: 3 - Alpha',
         'Framework :: Django',
