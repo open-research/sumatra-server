@@ -7,7 +7,7 @@ Based on http://yml-blog.blogspot.com/2009/10/django-piston-authentication-again
 from django.conf import settings
 from django.utils.http import urlquote
 from django.http import HttpResponseRedirect
-from sumatra_piston.resource import determine_emitter
+from sumatra_server.resource import determine_emitter
 
 class DjangoAuthentication(object):
     """

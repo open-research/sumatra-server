@@ -1,8 +1,8 @@
 from django.conf.urls.defaults import *
 from piston.authentication import HttpBasicAuthentication
-from sumatra_piston.authentication import DjangoAuthentication, AuthenticationDispatcher
-from sumatra_piston.handlers import RecordHandler, ProjectHandler, ProjectListHandler, PermissionListHandler
-from sumatra_piston.resource import Resource
+from sumatra_server.authentication import DjangoAuthentication, AuthenticationDispatcher
+from sumatra_server.handlers import RecordHandler, ProjectHandler, ProjectListHandler, PermissionListHandler
+from sumatra_server.resource import Resource
 
 auth = AuthenticationDispatcher({'html': DjangoAuthentication()},
                                 default=HttpBasicAuthentication(realm='Sumatra Server API'))

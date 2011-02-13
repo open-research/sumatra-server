@@ -19,7 +19,7 @@
   }, 
   {
     "pk": 1, 
-    "model": "sumatra_piston.projectpermission", 
+    "model": "sumatra_server.projectpermission", 
     "fields": {
       "project": "TestProject", 
       "user": 1
