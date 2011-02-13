@@ -1,0 +1,24 @@
+import os
+from distutils.core import setup
+
+setup(
+    name = "sumatra-server",
+    version = "0.1pre",
+    url = 'http://bitbucket.org/apdavison/sumatra_server/',
+    download_url = 'https://bitbucket.org/apdavison/sumatra_server/downloads',
+    license = "CeCILL v2 http://www.cecill.info",
+    description = "Sumatra Server is a Django app that implements an HTTP-based store for records of computational experiments.",
+    author = 'Andrew Davison',
+    author_email = 'andrew.davison@unic.cnrs-gif.fr',
+    packages = ['sumatra_server'],
+    classifiers = [
+        'Development Status :: 3 - Alpha',
+        'Framework :: Django',
+        'Intended Audience :: Science/Research',
+        'License :: Other/Proprietary License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Topic :: Scientific/Engineering',
+        'Topic :: Internet :: WWW/HTTP',
+    ]
+)
