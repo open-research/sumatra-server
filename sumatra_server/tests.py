@@ -2,6 +2,7 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.test.client import Client
+from django.conf import settings
 try:
     import json
 except ImportError:
@@ -115,10 +116,12 @@ class RecordHandlerTest(BaseTestCase):
                               "launch_mode","datastore","outcome",
                               "data_key","timestamp","tags","diff",
                               "user","dependencies", "platforms",
-                              "project_id")))
+                              "project_id", "input_data", "script_arguments")))
         self.assertEqual(data["tags"], "foobar")
         
     def test_GET_format_html(self):
+        self.extra = {} # use Django auth, not HTTP Basic
+        self.client.login(username="testuser", password="abc123")
         label = "haggling"
         rec_uri = reverse("sumatra-record",
                           kwargs={"project": "TestProject",
@@ -145,6 +148,8 @@ class RecordHandlerTest(BaseTestCase):
         self.failUnlessEqual(response.status_code, NOT_FOUND)
     
     def test_GET_Accept_html(self):
+        self.extra = {} # use Django auth, not HTTP Basic
+        self.client.login(username="testuser", password="abc123")
         label = "haggling"
         rec_uri = reverse("sumatra-record",
                           kwargs={"project": "TestProject",
@@ -162,6 +167,7 @@ class RecordHandlerTest(BaseTestCase):
                 "path": "lgljgkjhk",
                 "version": "iugnogn",
                 "name": "kljhnhn",
+                "options": "dfgdfg"
              },
             "repository": {
                 "url": "iuhnhc;<s",
@@ -173,6 +179,8 @@ class RecordHandlerTest(BaseTestCase):
                 "content": "oignuguygnug",
                 "type": "hjgjgn65878",
             },
+            "input_data": "sfgshaeth",
+            "script_arguments": "p8yupyrprutot",
             "launch_mode": {
                 "type": "OIUNIU6nkjgbun", 
                 "parameters": "GUNYGU76565",
@@ -218,6 +226,7 @@ class RecordHandlerTest(BaseTestCase):
         self.assertEqual(response.status_code, OK)
         #pprint(deunicode(json.loads(response.content)))
         new_record.update(project_id="TestProject")
+        self.maxDiff = None
         self.assertEqual(new_record, deunicode(json.loads(response.content)))
         
     def test_PUT_existing_record_json(self):

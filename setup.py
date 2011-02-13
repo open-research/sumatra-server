@@ -11,7 +11,7 @@ setup(
     author = 'Andrew Davison',
     author_email = 'andrew.davison@unic.cnrs-gif.fr',
     packages = ['sumatra_server', 'sumatra_server.templatetags'],
-    package_data = {'sumatra_server': ["templates/*.html"]},
+    package_data = {'sumatra_server': ["templates/*.html", "fixtures/*.json"]},
     classifiers = [
         'Development Status :: 3 - Alpha',
         'Framework :: Django',

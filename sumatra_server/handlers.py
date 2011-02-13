@@ -49,7 +49,8 @@ class RecordHandler(BaseHandler):
     fields = ('label', 'timestamp', 'reason', 'outcome', 'duration',
               'executable', 'repository', 'main_file', 'version', 'diff',
               'dependencies', 'parameters', 'launch_mode', 'datastore',
-              'data_key', 'platforms', 'tags', 'user', 'project_id')
+              'data_key', 'platforms', 'tags', 'user', 'project_id',
+              'script_arguments', 'input_data')
     template = "record_detail.html"
     
     def queryset(self, request): # this is already defined in more recent versions of Piston
