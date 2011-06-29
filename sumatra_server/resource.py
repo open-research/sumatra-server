@@ -17,7 +17,7 @@ def get_emitters_from_accept_header(request):
     possible_emitters = []
     if accept:
         print "ACCEPT:", accept
-        accepted_contenttypes = (ct.split(";")[0] for ct in accept.split(","))
+        accepted_contenttypes = (ct.split(";")[0] for ct in accept.split(",")) # need to handle wild-cards
         for ct in accepted_contenttypes:
             if ct in available_emitters:
                 possible_emitters.append(available_emitters[ct])
