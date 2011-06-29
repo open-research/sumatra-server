@@ -114,9 +114,10 @@ class RecordHandlerTest(BaseTestCase):
                               "duration","executable","repository",
                               "main_file","version","parameters",
                               "launch_mode","datastore","outcome",
-                              "data_key","timestamp","tags","diff",
+                              "output_data","timestamp","tags","diff",
                               "user","dependencies", "platforms",
-                              "project_id", "input_data", "script_arguments")))
+                              "project_id", "input_data", "script_arguments",
+                              "stdout_stderr")))
         self.assertEqual(data["tags"], "foobar")
         
     def test_GET_format_html(self):
@@ -179,7 +180,11 @@ class RecordHandlerTest(BaseTestCase):
                 "content": "oignuguygnug",
                 "type": "hjgjgn65878",
             },
-            "input_data": "sfgshaeth",
+            "input_data": [{
+                "path": "sfgshaeth",
+                "digest": "abcdef0123456789",
+                "metadata": ""
+            }],
             "script_arguments": "p8yupyrprutot",
             "launch_mode": {
                 "type": "OIUNIU6nkjgbun", 
@@ -190,7 +195,12 @@ class RecordHandlerTest(BaseTestCase):
                 "parameters": "oscih,spoirghosgc",
             },
             "outcome": "mihiuhpoip",
-            "data_key": "iugbufuyfiutyfitfy",
+            "stdout_stderr": "erawoiawof23",
+            "output_data": [{
+                "path": "iugbufuyfiutyfitfy",
+                "digest": "0123456789abcdef",
+                "metadata": ""
+            }],
             "timestamp": "2010-07-11 22:50:00",
             "tags": "abcd,efgh,ijklm",
             "diff": "iugoiug,ihg",
@@ -255,7 +265,7 @@ class RecordHandlerTest(BaseTestCase):
         self.assertNotEqual(data["version"], update["version"])
     
     def test_DELETE_existing_record(self):
-        label =  "20100709-154255"
+        label =  "20110629-132518"
         rec_uri = reverse("sumatra-record",
                           kwargs={"project": "TestProject",
                                   "label": label})

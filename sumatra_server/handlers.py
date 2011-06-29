@@ -49,8 +49,8 @@ class RecordHandler(BaseHandler):
     fields = ('label', 'timestamp', 'reason', 'outcome', 'duration',
               'executable', 'repository', 'main_file', 'version', 'diff',
               'dependencies', 'parameters', 'launch_mode', 'datastore',
-              'data_key', 'platforms', 'tags', 'user', 'project_id',
-              'script_arguments', 'input_data')
+              'output_data', 'platforms', 'tags', 'user', 'project_id',
+              'script_arguments', 'input_data', 'stdout_stderr')
     template = "record_detail.html"
     
     def queryset(self, request): # this is already defined in more recent versions of Piston
@@ -222,5 +222,9 @@ class PlatformHandler(BaseHandler):
 class DependencyHandler(BaseHandler):
     allowed_methods = []
     model = models.Dependency
+
+class DataKeyHandler(BaseHandler):
+    allowed_methods = []
+    model = models.DataKey
 
 # note: if we start to look at the Accept header, should send 406 response if we can't send the requested mimetype (RFC 2616)

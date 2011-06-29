@@ -11,16 +11,17 @@
     "pk": 1, 
     "model": "django_store.executable", 
     "fields": {
-      "path": "/usr/local/bin/python", 
-      "version": "2.5.2", 
-      "name": "Python"
+      "path": "/Library/Frameworks/Python.framework/Versions/2.7/bin/python", 
+      "version": "2.7", 
+      "name": "Python", 
+      "options": ""
     }
   }, 
   {
-    "pk": 6, 
+    "pk": 5, 
     "model": "django_store.dependency", 
     "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/plat-mac/Carbon", 
+      "path": "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac/Carbon", 
       "version": "unknown", 
       "name": "Carbon", 
       "module": "python", 
@@ -28,10 +29,10 @@
     }
   }, 
   {
-    "pk": 3, 
+    "pk": 7, 
     "model": "django_store.dependency", 
     "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/plat-mac/lib-scriptpackages/Finder", 
+      "path": "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac/lib-scriptpackages/Finder", 
       "version": "unknown", 
       "name": "Finder", 
       "module": "python", 
@@ -42,20 +43,9 @@
     "pk": 2, 
     "model": "django_store.dependency", 
     "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/site-packages/PyQt4", 
+      "path": "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac/lib-scriptpackages/StdSuites", 
       "version": "unknown", 
-      "name": "PyQt4", 
-      "module": "python", 
-      "diff": ""
-    }
-  }, 
-  {
-    "pk": 15, 
-    "model": "django_store.dependency", 
-    "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/site-packages/Pyrex-0.9.8.5.0001-py2.5.egg/Pyrex", 
-      "version": "unknown", 
-      "name": "Pyrex", 
+      "name": "StdSuites", 
       "module": "python", 
       "diff": ""
     }
@@ -64,42 +54,9 @@
     "pk": 1, 
     "model": "django_store.dependency", 
     "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/plat-mac/lib-scriptpackages/StdSuites", 
-      "version": "unknown", 
-      "name": "StdSuites", 
-      "module": "python", 
-      "diff": ""
-    }
-  }, 
-  {
-    "pk": 14, 
-    "model": "django_store.dependency", 
-    "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/plat-mac/lib-scriptpackages/_builtinSuites", 
+      "path": "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac/lib-scriptpackages/_builtinSuites", 
       "version": "unknown", 
       "name": "_builtinSuites", 
-      "module": "python", 
-      "diff": ""
-    }
-  }, 
-  {
-    "pk": 12, 
-    "model": "django_store.dependency", 
-    "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/site-packages/PyXML-0.8.4.0003-py2.5-macosx-10.3-fat.egg/_xmlplus", 
-      "version": "0.8.4", 
-      "name": "_xmlplus", 
-      "module": "python", 
-      "diff": ""
-    }
-  }, 
-  {
-    "pk": 8, 
-    "model": "django_store.dependency", 
-    "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/site-packages/python_dateutil-1.4.0001-py2.5.egg/dateutil", 
-      "version": "1.4", 
-      "name": "dateutil", 
       "module": "python", 
       "diff": ""
     }
@@ -108,86 +65,31 @@
     "pk": 4, 
     "model": "django_store.dependency", 
     "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/site-packages/TraitsGUI-3.0.2-py2.5.egg/enthought", 
-      "version": "unknown", 
-      "name": "enthought", 
+      "path": "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/nose-0.11.4-py2.7.egg/nose", 
+      "version": "0.11.4", 
+      "name": "nose", 
       "module": "python", 
       "diff": ""
     }
   }, 
   {
-    "pk": 10, 
+    "pk": 6, 
     "model": "django_store.dependency", 
     "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/site-packages/matplotlib-0.98.3.0001-py2.5-macosx-10.3-fat.egg/matplotlib", 
-      "version": "0.98.3", 
-      "name": "matplotlib", 
-      "module": "python", 
-      "diff": ""
-    }
-  }, 
-  {
-    "pk": 9, 
-    "model": "django_store.dependency", 
-    "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/site-packages/matplotlib-0.98.3.0001-py2.5-macosx-10.3-fat.egg/mpl_toolkits", 
-      "version": "unknown", 
-      "name": "mpl_toolkits", 
-      "module": "python", 
-      "diff": ""
-    }
-  }, 
-  {
-    "pk": 5, 
-    "model": "django_store.dependency", 
-    "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/site-packages/numarray-1.5.2.0001-py2.5-macosx-10.3-fat.egg/numarray", 
-      "version": "1.5.2", 
-      "name": "numarray", 
-      "module": "python", 
-      "diff": ""
-    }
-  }, 
-  {
-    "pk": 7, 
-    "model": "django_store.dependency", 
-    "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/site-packages/numpy-1.1.1.0001-py2.5-macosx-10.3-fat.egg/numpy", 
-      "version": "1.1.1", 
+      "path": "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy", 
+      "version": "1.5.0", 
       "name": "numpy", 
       "module": "python", 
       "diff": ""
     }
   }, 
   {
-    "pk": 11, 
+    "pk": 3, 
     "model": "django_store.dependency", 
     "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/site-packages/pytz-2008c.0001-py2.5.egg/pytz", 
-      "version": "2008c", 
-      "name": "pytz", 
-      "module": "python", 
-      "diff": ""
-    }
-  }, 
-  {
-    "pk": 16, 
-    "model": "django_store.dependency", 
-    "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/site-packages/setuptools-0.6c8.0002-py2.5.egg/setuptools", 
-      "version": "0.6c8", 
-      "name": "setuptools", 
-      "module": "python", 
-      "diff": ""
-    }
-  }, 
-  {
-    "pk": 13, 
-    "model": "django_store.dependency", 
-    "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/site-packages/wxPython-2.8.7.1.0001_s-py2.5-macosx-10.3-fat.egg/wx", 
-      "version": "2.8.7.1 (mac-unicode)", 
-      "name": "wx", 
+      "path": "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/scipy", 
+      "version": "0.8.0", 
+      "name": "scipy", 
       "module": "python", 
       "diff": ""
     }
@@ -196,7 +98,7 @@
     "pk": 1, 
     "model": "django_store.repository", 
     "fields": {
-      "url": "/Users/andrew/tmp/SumatraTest", 
+      "url": "/private/var/folders/d6/d6KhTK+BH-07QAwd5D7zNE+++yU/-Tmp-/tmp5jumoB", 
       "type": "MercurialRepository"
     }
   }, 
@@ -204,7 +106,7 @@
     "pk": 1, 
     "model": "django_store.parameterset", 
     "fields": {
-      "content": "n = 100 # number of values to draw\n\nseed = 65785 # seed for random number generator\n\ndistr = \"uniform\" # statistical distribution to draw values from \n", 
+      "content": "n = 100 # number of values to draw\nseed = 65785 # seed for random number generator\ndistr = \"uniform\" # statistical distribution to draw values from", 
       "type": "SimpleParameterSet"
     }
   }, 
@@ -212,7 +114,7 @@
     "pk": 2, 
     "model": "django_store.parameterset", 
     "fields": {
-      "content": "n = 50 # number of values to draw\n\nseed = 34326 # seed for random number generator\n\ndistr = \"normal\" # statistical distribution to draw values from \n", 
+      "content": "n = 50 # number of values to draw\nseed = 34326 # seed for random number generator\ndistr = \"normal\" # statistical distribution to draw values from", 
       "type": "SimpleParameterSet"
     }
   }, 
@@ -220,7 +122,7 @@
     "pk": 3, 
     "model": "django_store.parameterset", 
     "fields": {
-      "content": "seed = 34326 # seed for random number generator\ndistr = \"normal\" # statistical distribution to draw values from \nn = 50 # number of values to draw", 
+      "content": "seed = 34326 # seed for random number generator\ndistr = \"normal\" # statistical distribution to draw values from\nn = 50 # number of values to draw", 
       "type": "SimpleParameterSet"
     }
   }, 
@@ -228,7 +130,7 @@
     "pk": 4, 
     "model": "django_store.parameterset", 
     "fields": {
-      "content": "seed = 65785 # seed for random number generator\ndistr = \"uniform\" # statistical distribution to draw values from \nn = 100 # number of values to draw", 
+      "content": "seed = 65785 # seed for random number generator\ndistr = \"uniform\" # statistical distribution to draw values from\nn = 100 # number of values to draw", 
       "type": "SimpleParameterSet"
     }
   }, 
@@ -236,15 +138,7 @@
     "pk": 5, 
     "model": "django_store.parameterset", 
     "fields": {
-      "content": "n = 50 # number of values to draw\nseed = 34326 # seed for random number generator\ndistr = \"normal\" # statistical distribution to draw values from ", 
-      "type": "SimpleParameterSet"
-    }
-  }, 
-  {
-    "pk": 6, 
-    "model": "django_store.parameterset", 
-    "fields": {
-      "content": "n = 100 # number of values to draw\n\nseed = 65785 # seed for random number generator\n\ntau_m = 10.0\ndistr = \"uniform\" # statistical distribution to draw values from \n", 
+      "content": "n = 100 # number of values to draw\nseed = 65785 # seed for random number generator\ntau_m = 10.0\ndistr = \"uniform\" # statistical distribution to draw values from", 
       "type": "SimpleParameterSet"
     }
   }, 
@@ -261,7 +155,25 @@
     "model": "django_store.datastore", 
     "fields": {
       "type": "FileSystemDataStore", 
-      "parameters": "{'root': '/Users/andrew/tmp/SumatraTest/Data'}"
+      "parameters": "{'root': '/private/var/folders/d6/d6KhTK+BH-07QAwd5D7zNE+++yU/-Tmp-/tmp5jumoB/Data'}"
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "django_store.datakey", 
+    "fields": {
+      "path": "example2.dat", 
+      "digest": "43a47cb379df2a7008fdeb38c6172278d000fdc4", 
+      "metadata": "{'mimetype': None, 'size': 2500, 'encoding': None}"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "django_store.datakey", 
+    "fields": {
+      "path": "example2.dat", 
+      "digest": "9b8efe4161e4f78aa41a3ab7195db3d5709ba8b8", 
+      "metadata": "{'mimetype': None, 'size': 1276, 'encoding': None}"
     }
   }, 
   {
@@ -269,13 +181,13 @@
     "model": "django_store.platforminformation", 
     "fields": {
       "system_name": "Darwin", 
-      "ip_addr": "129.199.12.56", 
-      "architecture_bits": "32bit", 
+      "ip_addr": "157.136.60.154", 
+      "architecture_bits": "64bit", 
       "machine": "i386", 
       "architecture_linkage": "", 
       "version": "Darwin Kernel Version 9.8.0: Wed Jul 15 16:55:01 PDT 2009; root:xnu-1228.15.4~1/RELEASE_I386", 
       "release": "9.8.0", 
-      "network_name": "dhcp-12-56.ens.fr", 
+      "network_name": "unic154.inaf.cnrs-gif.fr", 
       "processor": "i386"
     }
   }, 
@@ -283,243 +195,200 @@
     "pk": 1, 
     "model": "django_store.record", 
     "fields": {
-      "executable": 1, 
-      "parameters": 4, 
-      "repository": 1, 
-      "tags": "", 
-      "main_file": "main.py", 
-      "label": "20100709-154255", 
-      "project": "TestProject", 
+      "script_arguments": "<parameters>", 
       "platforms": [
         1
       ], 
-      "reason": "", 
-      "version": "396c2020ca50", 
-      "user": "", 
-      "launch_mode": 1, 
-      "timestamp": "2010-07-09 15:42:55", 
-      "duration": 0.58756184577941895, 
+      "duration": 0.16250395774841309, 
       "diff": "", 
       "datastore": 1, 
-      "outcome": "'Eureka! Nobel prize here we come.'", 
-      "data_key": "['example2.dat']", 
+      "executable": 1, 
+      "parameters": 4, 
+      "label": "20110629-132505", 
+      "version": "f8dd5c07d524", 
+      "stdout_stderr": "", 
+      "repository": 1, 
+      "tags": "", 
+      "timestamp": "2011-06-29 13:25:05", 
+      "reason": "", 
       "dependencies": [
-        6, 
-        3, 
-        2, 
-        15, 
-        1, 
-        14, 
-        12, 
-        8, 
-        4, 
-        10, 
-        9, 
         5, 
         7, 
-        11, 
-        16, 
-        13
-      ]
+        2, 
+        1, 
+        4, 
+        6, 
+        3
+      ], 
+      "user": "", 
+      "output_data": [
+        1
+      ], 
+      "project": "TestProject", 
+      "input_data": [], 
+      "launch_mode": 1, 
+      "main_file": "main.py", 
+      "outcome": "'Eureka! Nobel prize here we come.'"
     }
   }, 
   {
     "pk": 2, 
     "model": "django_store.record", 
     "fields": {
-      "executable": 1, 
-      "parameters": 1, 
-      "repository": 1, 
-      "tags": "", 
-      "main_file": "main.py", 
-      "label": "20100709-154309", 
-      "project": "TestProject", 
+      "script_arguments": "<parameters>", 
       "platforms": [
         1
       ], 
-      "reason": "", 
-      "version": "396c2020ca50", 
-      "user": "", 
-      "launch_mode": 1, 
-      "timestamp": "2010-07-09 15:43:09", 
-      "duration": 0.5871429443359375, 
+      "duration": 0.16177797317504883, 
       "diff": "", 
       "datastore": 1, 
-      "outcome": "", 
-      "data_key": "['example2.dat']", 
+      "executable": 1, 
+      "parameters": 1, 
+      "label": "20110629-132518", 
+      "version": "f8dd5c07d524", 
+      "stdout_stderr": "", 
+      "repository": 1, 
+      "tags": "", 
+      "timestamp": "2011-06-29 13:25:18", 
+      "reason": "", 
       "dependencies": [
-        6, 
-        3, 
-        2, 
-        15, 
-        1, 
-        14, 
-        12, 
-        8, 
-        4, 
-        10, 
-        9, 
         5, 
         7, 
-        11, 
-        16, 
-        13
-      ]
+        2, 
+        1, 
+        4, 
+        6, 
+        3
+      ], 
+      "user": "", 
+      "output_data": [
+        1
+      ], 
+      "project": "TestProject", 
+      "input_data": [], 
+      "launch_mode": 1, 
+      "main_file": "main.py", 
+      "outcome": ""
     }
   }, 
   {
     "pk": 3, 
     "model": "django_store.record", 
     "fields": {
-      "executable": 1, 
-      "parameters": 5, 
-      "repository": 1, 
-      "tags": "foobar", 
-      "main_file": "main.py", 
-      "label": "haggling", 
-      "project": "TestProject", 
+      "script_arguments": "<parameters>", 
       "platforms": [
         1
       ], 
-      "reason": "'determine whether the gourd is worth 3 or 4 shekels'", 
-      "version": "396c2020ca50", 
-      "user": "", 
-      "launch_mode": 1, 
-      "timestamp": "2010-07-09 15:43:20", 
-      "duration": 0.59372901916503906, 
+      "duration": 0.16460895538330078, 
       "diff": "", 
       "datastore": 1, 
-      "outcome": "'apparently, it is worth NaN shekels.'", 
-      "data_key": "['example2.dat']", 
+      "executable": 1, 
+      "parameters": 2, 
+      "label": "haggling", 
+      "version": "f8dd5c07d524", 
+      "stdout_stderr": "", 
+      "repository": 1, 
+      "tags": "foobar", 
+      "timestamp": "2011-06-29 13:25:24", 
+      "reason": "determine whether the gourd is worth 3 or 4 shekels", 
       "dependencies": [
-        6, 
-        3, 
-        2, 
-        15, 
-        1, 
-        14, 
-        12, 
-        8, 
-        4, 
-        10, 
-        9, 
         5, 
         7, 
-        11, 
-        16, 
-        13
-      ]
+        2, 
+        1, 
+        4, 
+        6, 
+        3
+      ], 
+      "user": "", 
+      "output_data": [
+        2
+      ], 
+      "project": "TestProject", 
+      "input_data": [], 
+      "launch_mode": 1, 
+      "main_file": "main.py", 
+      "outcome": "'apparently, it is worth NaN shekels.'"
     }
   }, 
   {
     "pk": 4, 
     "model": "django_store.record", 
     "fields": {
-      "executable": 1, 
-      "parameters": 6, 
-      "repository": 1, 
-      "tags": "", 
-      "main_file": "main.py", 
-      "label": "20100709-154338", 
-      "project": "TestProject", 
+      "script_arguments": "<parameters>", 
       "platforms": [
         1
       ], 
-      "reason": "'test effect of a smaller time constant'", 
-      "version": "396c2020ca50", 
-      "user": "", 
-      "launch_mode": 1, 
-      "timestamp": "2010-07-09 15:43:38", 
-      "duration": 0.58840394020080566, 
+      "duration": 0.16658616065979004, 
       "diff": "", 
       "datastore": 1, 
-      "outcome": "", 
-      "data_key": "['example2.dat']", 
+      "executable": 1, 
+      "parameters": 5, 
+      "label": "20110629-132536", 
+      "version": "f8dd5c07d524", 
+      "stdout_stderr": "", 
+      "repository": 1, 
+      "tags": "", 
+      "timestamp": "2011-06-29 13:25:36", 
+      "reason": "test effect of a smaller time constant", 
       "dependencies": [
-        6, 
-        3, 
-        2, 
-        15, 
-        1, 
-        14, 
-        12, 
-        8, 
-        4, 
-        10, 
-        9, 
         5, 
         7, 
-        11, 
-        16, 
-        13
-      ]
+        2, 
+        1, 
+        4, 
+        6, 
+        3
+      ], 
+      "user": "", 
+      "output_data": [
+        1
+      ], 
+      "project": "TestProject", 
+      "input_data": [], 
+      "launch_mode": 1, 
+      "main_file": "main.py", 
+      "outcome": ""
     }
   }, 
   {
     "pk": 5, 
     "model": "django_store.record", 
     "fields": {
-      "executable": 1, 
-      "parameters": 3, 
-      "repository": 1, 
-      "tags": "", 
-      "main_file": "main.py", 
-      "label": "haggling_repeat", 
-      "project": "TestProject", 
+      "script_arguments": "<parameters>", 
       "platforms": [
         1
       ], 
-      "reason": "Repeat experiment haggling", 
-      "version": "396c2020ca50", 
-      "user": "", 
-      "launch_mode": 1, 
-      "timestamp": "2010-07-09 15:43:47", 
-      "duration": 0.58335018157958984, 
+      "duration": 0.17115211486816406, 
       "diff": "", 
       "datastore": 1, 
-      "outcome": "The new record exactly matches the original.", 
-      "data_key": "['example2.dat']", 
+      "executable": 1, 
+      "parameters": 3, 
+      "label": "haggling_repeat", 
+      "version": "f8dd5c07d524", 
+      "stdout_stderr": "", 
+      "repository": 1, 
+      "tags": "", 
+      "timestamp": "2011-06-29 13:25:40", 
+      "reason": "Repeat experiment haggling", 
       "dependencies": [
-        6, 
-        3, 
-        2, 
-        15, 
-        1, 
-        14, 
-        12, 
-        8, 
-        4, 
-        10, 
-        9, 
         5, 
         7, 
-        11, 
-        16, 
-        13
-      ]
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "tagging.tag", 
-    "fields": {
-      "name": "barfoo"
-    }
-  }, 
-  {
-    "pk": 1, 
-    "model": "tagging.tag", 
-    "fields": {
-      "name": "foobar"
-    }
-  }, 
-  {
-    "pk": 1, 
-    "model": "tagging.taggeditem", 
-    "fields": {
-      "tag": 1, 
-      "object_id": 3, 
-      "content_type": 18
+        2, 
+        1, 
+        4, 
+        6, 
+        3
+      ], 
+      "user": "", 
+      "output_data": [
+        2
+      ], 
+      "project": "TestProject", 
+      "input_data": [], 
+      "launch_mode": 1, 
+      "main_file": "main.py", 
+      "outcome": "The new record exactly matches the original."
     }
   }
 ]

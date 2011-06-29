@@ -20,13 +20,20 @@
     <tr><th>Repository:</th><td>{{data.repository.url}}</td></tr>
     <tr><th>Main file:</th><td>{{data.main_file}}</td></tr>
     <tr><th>Version:</th><td>{{data.version}}{% if data.diff %}* (<a href="diff/">diff</a>){% endif %}</td></tr>
+    <tr><th>Arguments:</th><td>{{data.script_arguments}}</td></tr>
     <tr><th>Tags:</th><td>{{data.tags|link:"../?tags=%s"}}</td></tr>
 </table>
 
 </form>
 
 <h3>Data files</h3>
-{{data.data_key}}
+<table>
+{% for file in data.output_data %}
+  <tr class="{% cycle "odd" "even" %}"><td>{{file.path}}</td>
+                                       <td>{{file.digest}}</td>
+                                       </tr>
+{% endfor %}
+</table>
 
 <h3>Parameters</h3>
 {{data.parameters.content}}
@@ -56,6 +63,11 @@
     <td>{{platform.version}}</td>
 </tr>{% endfor %}
 </table>
+
+{% if data.stdout_stderr %}
+<h3>Stdout &amp; Stderr</h3>
+{{ data.stdout_stderr }}
+{% endif %}
 
 {% endblock %}
 
