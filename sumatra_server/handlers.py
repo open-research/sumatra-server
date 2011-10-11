@@ -122,7 +122,7 @@ class RecordHandler(BaseHandler):
 
 
 class ProjectHandler(BaseHandler):
-    allowed_methods = ('GET',)
+    allowed_methods = ('GET', 'PUT')
     template = "project_detail.html"
     
     def read(self, request, project):
@@ -145,6 +145,17 @@ class ProjectHandler(BaseHandler):
                     'access': [perm.user.username for perm in prj.projectpermission_set.all()],
                     'tags': tags,
                 }
+
+    def update(self, request, project):
+        """Create a new project and give the current user permission to access it."""
+        if request.user.is_anonymous():
+            return rc.FORBIDDEN
+        prj, created = models.Project.objects.get_or_create(id=project)
+        if created:
+            prj.projectpermission_set.create(user=user)
+            return rc.CREATED
+        else:
+            return rc.DUPLICATE_ENTRY
 
 
 class PermissionListHandler(BaseHandler):

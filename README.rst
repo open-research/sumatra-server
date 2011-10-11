@@ -92,7 +92,7 @@ the URL.
    * - /<project_name>/
      - Return a list of records for the given project. May add a querystring ``?tags=tag1,tag2`` to show only records that have one of the supplied tags
      - .
-     - .
+     - Create a new project and give the current user permission to access the project
      - .
    * - /<project_name>/permissions/
      - Return a list of users who can access this project
@@ -149,7 +149,17 @@ format that must be used to PUT a new record into the store::
             "type": "FileSystemDataStore", 
             "parameters": "{'root': '/Users/andrew/tmp/SumatraTest/Data'}"
         }, 
-        "data_key": "['example2.dat']", 
+        "output_data": [
+            {
+                "path": "output.dat",
+                "digest": 'a39100d5130f613b96c9fcf605b68d53d60f6fdb',
+                "metadata": "",
+            } for key in record.output_data],
+        "input_datastore": {
+            "type": "FileSystemDataStore", ,
+            "parameters": "{'root': '/'}",
+        },
+        "input_data": [],
         "dependencies": [
             {
                 "path": "/Library/Frameworks/Python.framework/Versions/4.0.30002/lib/python2.5/site-packages/matplotlib-0.98.3.0001-py2.5-macosx-10.3-fat.egg/matplotlib", 
