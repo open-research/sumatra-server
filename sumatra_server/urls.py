@@ -9,11 +9,12 @@ auth = AuthenticationDispatcher({'html': DjangoAuthentication()},
 
 record_resource = Resource(RecordHandler, authentication=auth)
 project_resource = Resource(ProjectHandler, authentication=auth)
+projectlist_resource = Resource(ProjectListHandler, authentication=auth)
 permissionlist_resource = Resource(PermissionListHandler, authentication=auth)
 print "AUTH:", project_resource.authentication
 
 urlpatterns = patterns('',
-    url(r'^$', Resource(ProjectListHandler), name="sumatra-project-list"),
+    url(r'^$', projectlist_resource, name="sumatra-project-list"),
     url(r'^(?P<project>[^/]+)/$', project_resource, name="sumatra-project"),
     url(r'^(?P<project>[^/]+)/permissions/$', permissionlist_resource, name="sumatra-project-permissions"),
     url(r'^(?P<project>[^/]+)/(?P<label>\w+[\w|\-\.]*)/$', record_resource, name="sumatra-record"),
