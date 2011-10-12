@@ -152,7 +152,7 @@ class ProjectHandler(BaseHandler):
             return rc.FORBIDDEN
         prj, created = models.Project.objects.get_or_create(id=project)
         if created:
-            prj.projectpermission_set.create(user=user)
+            prj.projectpermission_set.create(user=request.user)
             return rc.CREATED
         else:
             return rc.DUPLICATE_ENTRY
