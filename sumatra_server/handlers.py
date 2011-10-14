@@ -222,10 +222,32 @@ class RepositoryHandler(BaseHandler):
 class LaunchModeHandler(BaseHandler):
     allowed_methods = []
     model = models.LaunchMode
+    fields = ('type', 'parameters')
+
+    @staticmethod
+    def parameters(obj):
+        if obj.parameters:
+            value = eval(obj.parameters, {'__builtins__': []}, {})
+            assert isinstance(value, dict)
+        else:
+            value = {}
+        return value 
+    
     
 class DatastoreHandler(BaseHandler):
     allowed_methods = []
     model = models.Datastore
+    fields = ('type', 'parameters')
+
+    @staticmethod
+    def parameters(obj):
+        if obj.parameters:
+            value = eval(obj.parameters, {'__builtins__': []}, {})
+            assert isinstance(value, dict)
+        else:
+            value = {}
+        return value
+    
     
 class PlatformHandler(BaseHandler):
     allowed_methods = []
@@ -238,5 +260,15 @@ class DependencyHandler(BaseHandler):
 class DataKeyHandler(BaseHandler):
     allowed_methods = []
     model = models.DataKey
+    fields = ('path', 'digest', 'metadata')
+
+    @staticmethod
+    def metadata(obj):
+        if obj.metadata:
+            value = eval(obj.metadata, {'__builtins__': []}, {})
+            assert isinstance(value, dict)
+        else:
+            value = {}
+        return value 
 
 # note: if we start to look at the Accept header, should send 406 response if we can't send the requested mimetype (RFC 2616)

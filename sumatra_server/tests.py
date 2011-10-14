@@ -119,6 +119,8 @@ class RecordHandlerTest(BaseTestCase):
                               "project_id", "input_data", "input_datastore",
                               "script_arguments", "stdout_stderr")))
         self.assertEqual(data["tags"], "foobar")
+        self.assertEqual(data["output_data"][0]["path"], "example2.dat")
+        self.assertIsInstance(data["output_data"][0]["metadata"], dict)
         
     def test_GET_format_html(self):
         self.extra = {} # use Django auth, not HTTP Basic
@@ -183,27 +185,31 @@ class RecordHandlerTest(BaseTestCase):
             "input_data": [{
                 "path": "sfgshaeth",
                 "digest": "abcdef0123456789",
-                "metadata": ""
+                "metadata": {}
             }],
             "script_arguments": "p8yupyrprutot",
             "launch_mode": {
                 "type": "OIUNIU6nkjgbun", 
-                "parameters": "GUNYGU76565",
+                "parameters": {},
             },
             "datastore": {
                 "type": "mosigcqpoejf;",
-                "parameters": "oscih,spoirghosgc",
+                "parameters": {
+                    "root": "/path/to/output/data"   
+                }
             },
             "input_datastore": {
                 "type": "mosigcqpoejf;",
-                "parameters": "oscih,spoirghosgc",
+                "parameters": {
+                    "root": "/path/to/input/data"
+                },
             },
             "outcome": "mihiuhpoip",
             "stdout_stderr": "erawoiawof23",
             "output_data": [{
                 "path": "iugbufuyfiutyfitfy",
                 "digest": "0123456789abcdef",
-                "metadata": ""
+                "metadata": {}
             }],
             "timestamp": "2010-07-11 22:50:00",
             "tags": "abcd,efgh,ijklm",
