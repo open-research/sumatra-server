@@ -17,18 +17,17 @@ NOT_FOUND = 404
 NO_CONTENT = 204
 
 
-def deunicode(D):
+def deunicode(v):
     """Convert unicode keys and values to str"""
-    E = {}
-    for k,v in D.items():
-        if isinstance(v, dict):
-            v = deunicode(v)
-        elif isinstance(v, unicode):
-            v = str(v)
-        elif isinstance(v, list):
-            v = [deunicode(d) for d in v]
-        E[str(k)] = v
-    return E
+    if isinstance(v, dict):
+        for kk,vv in v.items():
+            v[str(kk)] = deunicode(vv)
+    elif isinstance(v, unicode):
+        v = str(v)
+    elif isinstance(v, list):
+        v = [deunicode(d) for d in v]
+    return v
+
 
 class BaseTestCase(TestCase):
     fixtures = ['haggling', 'permissions']
@@ -118,7 +117,7 @@ class RecordHandlerTest(BaseTestCase):
                               "user","dependencies", "platforms",
                               "project_id", "input_data", "input_datastore",
                               "script_arguments", "stdout_stderr")))
-        self.assertEqual(data["tags"], "foobar")
+        self.assertEqual(data["tags"], ["foobar"])
         self.assertEqual(data["output_data"][0]["path"], "example2.dat")
         self.assertIsInstance(data["output_data"][0]["metadata"], dict)
         
@@ -212,8 +211,8 @@ class RecordHandlerTest(BaseTestCase):
                 "metadata": {}
             }],
             "timestamp": "2010-07-11 22:50:00",
-            "tags": "abcd,efgh,ijklm",
-            "diff": "iugoiug,ihg",
+            "tags": ["abcd", "efgh", "ijklm", "tag with spaces"],
+            "diff": "+++---",
             "user": "gnugynygy",
             "dependencies": [{
                 "path": "moh,oh",
@@ -247,6 +246,7 @@ class RecordHandlerTest(BaseTestCase):
         #pprint(deunicode(json.loads(response.content)))
         new_record.update(project_id="TestProject")
         self.maxDiff = None
+        #import pdb; pdb.set_trace()
         self.assertEqual(new_record, deunicode(json.loads(response.content)))
         
     def test_PUT_existing_record_json(self):
@@ -256,7 +256,7 @@ class RecordHandlerTest(BaseTestCase):
         update = {
             "reason": "reason goes here",
             "outcome": "comments on outcome go here",
-            "tags": "tagA,tagB,tagC",
+            "tags": ["tagA", "tagB", "tagC", "tag D"],
             "version": "this should not be updated"
         }
         response = self.client.put(rec_uri, data=json.dumps(update),
@@ -271,8 +271,8 @@ class RecordHandlerTest(BaseTestCase):
         self.assertEqual(data["label"], "haggling")
         self.assertEqual(data["reason"], update["reason"])
         self.assertEqual(data["outcome"], update["outcome"])
-        self.assertEqual(data["tags"], update["tags"])
-        self.assertNotEqual(data["version"], update["version"])
+        self.assertEqual(set(data["tags"]), set(update["tags"]))
+        self.assertNotEqual(set(data["version"]), set(update["version"]))
     
     def test_DELETE_existing_record(self):
         label = "20111013-172503"

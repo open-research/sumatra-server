@@ -9,6 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
 from forms import PermissionsForm
+from tagging.utils import parse_tag_input
 
 """
 Note that in the Wikipedia REST article, the verb table differs slightly from
@@ -54,6 +55,10 @@ class RecordHandler(BaseHandler):
               'stdout_stderr')
     template = "record_detail.html"
     
+    @staticmethod
+    def tags(obj):
+        return parse_tag_input(obj.tags)
+    
     def queryset(self, request): # this is already defined in more recent versions of Piston
         return self.model.objects.all()
     
@@ -79,10 +84,12 @@ class RecordHandler(BaseHandler):
             # need to check consistency between URL project, group, timestamp
             # and the same information in request.data
             # we should also limit the fields that can be updated
-            updatable_fields = ('reason', 'outcome', 'tags')
+            updatable_fields = ('reason', 'outcome')
             inst = self.queryset(request).get(**filter)
             for field_name in updatable_fields:
                 setattr(inst, field_name, attrs[field_name])
+            #import pdb; pdb.set_trace()
+            inst.tags = ",".join(attrs['tags'])
             inst.save()
             return rc.ALL_OK
         except self.model.DoesNotExist:
@@ -93,7 +100,7 @@ class RecordHandler(BaseHandler):
             if created:
                 prj.projectpermission_set.create(user=request.user)
             inst = self.model(project=prj, label=label)
-            fields = [field for field in self.model._meta.fields if field.name not in ('project', 'label', 'db_id')]
+            fields = [field for field in self.model._meta.fields if field.name not in ('project', 'label', 'db_id', 'tags')]
             for field in fields:
                 if isinstance(field, ForeignKey):
                     fk_model = field.rel.to
@@ -104,6 +111,7 @@ class RecordHandler(BaseHandler):
                 else:
                     ##print field.name, attrs[field.name], type(attrs[field.name])
                     setattr(inst, field.name, attrs[field.name])
+            inst.tags = ",".join(attrs['tags'])
             inst.save()
             for field in self.model._meta.many_to_many:
                 for obj_attrs in attrs[field.name]:
