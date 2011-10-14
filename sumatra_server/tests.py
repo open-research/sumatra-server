@@ -51,12 +51,12 @@ class BaseTestCase(TestCase):
 
 class ProjectListHandlerTest(BaseTestCase):    
     
-    def setUp(self):
-        self.client.login(username="testuser", password="abc123")
+    #def setUp(self):
+    #    self.client.login(username="testuser", password="abc123")
     
     def test_GET_no_data(self):
         prj_list_uri = reverse("sumatra-project-list")
-        response = self.client.get(prj_list_uri)
+        response = self.client.get(prj_list_uri, {}, **self.extra)
         self.failUnlessEqual(response.status_code, OK)
         self.assertMimeType(response, "application/json")
         data = json.loads(response.content)
@@ -66,6 +66,7 @@ class ProjectListHandlerTest(BaseTestCase):
         self.assertEqual(prj["uri"], "http://testserver%sTestProject/" % prj_list_uri)
         
     def test_GET_format_html(self):
+        self.client.login(username="testuser", password="abc123")
         prj_list_uri = reverse("sumatra-project-list")
         response = self.client.get(prj_list_uri, {"format": "html"})
         self.failUnlessEqual(response.status_code, OK)
@@ -97,7 +98,6 @@ class ProjectHandlerTest(BaseTestCase):
 class RecordHandlerTest(BaseTestCase):
     
     def test_GET_no_data(self):
-        #label =  "20100709-154255"
         label = "haggling"
         rec_uri = reverse("sumatra-record",
                           kwargs={"project": "TestProject",
@@ -116,8 +116,8 @@ class RecordHandlerTest(BaseTestCase):
                               "launch_mode","datastore","outcome",
                               "output_data","timestamp","tags","diff",
                               "user","dependencies", "platforms",
-                              "project_id", "input_data", "script_arguments",
-                              "stdout_stderr")))
+                              "project_id", "input_data", "input_datastore",
+                              "script_arguments", "stdout_stderr")))
         self.assertEqual(data["tags"], "foobar")
         
     def test_GET_format_html(self):
@@ -194,6 +194,10 @@ class RecordHandlerTest(BaseTestCase):
                 "type": "mosigcqpoejf;",
                 "parameters": "oscih,spoirghosgc",
             },
+            "input_datastore": {
+                "type": "mosigcqpoejf;",
+                "parameters": "oscih,spoirghosgc",
+            },
             "outcome": "mihiuhpoip",
             "stdout_stderr": "erawoiawof23",
             "output_data": [{
@@ -265,7 +269,7 @@ class RecordHandlerTest(BaseTestCase):
         self.assertNotEqual(data["version"], update["version"])
     
     def test_DELETE_existing_record(self):
-        label =  "20110629-132518"
+        label = "20111013-172503"
         rec_uri = reverse("sumatra-record",
                           kwargs={"project": "TestProject",
                                   "label": label})

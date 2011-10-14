@@ -11,14 +11,14 @@
     "pk": 1, 
     "model": "django_store.executable", 
     "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/2.7/bin/python", 
-      "version": "2.7", 
+      "path": "/usr/local/bin/python", 
+      "version": "2.7.2", 
       "name": "Python", 
       "options": ""
     }
   }, 
   {
-    "pk": 5, 
+    "pk": 4, 
     "model": "django_store.dependency", 
     "fields": {
       "path": "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac/Carbon", 
@@ -29,7 +29,7 @@
     }
   }, 
   {
-    "pk": 7, 
+    "pk": 6, 
     "model": "django_store.dependency", 
     "fields": {
       "path": "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac/lib-scriptpackages/Finder", 
@@ -62,22 +62,11 @@
     }
   }, 
   {
-    "pk": 4, 
-    "model": "django_store.dependency", 
-    "fields": {
-      "path": "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/nose-0.11.4-py2.7.egg/nose", 
-      "version": "0.11.4", 
-      "name": "nose", 
-      "module": "python", 
-      "diff": ""
-    }
-  }, 
-  {
-    "pk": 6, 
+    "pk": 5, 
     "model": "django_store.dependency", 
     "fields": {
       "path": "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy", 
-      "version": "1.5.0", 
+      "version": "1.6.1", 
       "name": "numpy", 
       "module": "python", 
       "diff": ""
@@ -88,7 +77,7 @@
     "model": "django_store.dependency", 
     "fields": {
       "path": "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/scipy", 
-      "version": "0.8.0", 
+      "version": "0.10.0b2", 
       "name": "scipy", 
       "module": "python", 
       "diff": ""
@@ -98,7 +87,7 @@
     "pk": 1, 
     "model": "django_store.repository", 
     "fields": {
-      "url": "/private/var/folders/d6/d6KhTK+BH-07QAwd5D7zNE+++yU/-Tmp-/tmp5jumoB", 
+      "url": "/Users/andrew/tmp/SumatraExample", 
       "type": "MercurialRepository"
     }
   }, 
@@ -155,7 +144,15 @@
     "model": "django_store.datastore", 
     "fields": {
       "type": "FileSystemDataStore", 
-      "parameters": "{'root': '/private/var/folders/d6/d6KhTK+BH-07QAwd5D7zNE+++yU/-Tmp-/tmp5jumoB/Data'}"
+      "parameters": "{'root': u'/Users/andrew/tmp/SumatraExample/Data'}"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "django_store.datastore", 
+    "fields": {
+      "type": "FileSystemDataStore", 
+      "parameters": "{'root': u'/'}"
     }
   }, 
   {
@@ -181,54 +178,14 @@
     "model": "django_store.platforminformation", 
     "fields": {
       "system_name": "Darwin", 
-      "ip_addr": "157.136.60.154", 
+      "ip_addr": "192.168.56.1", 
       "architecture_bits": "64bit", 
-      "machine": "i386", 
+      "machine": "x86_64", 
       "architecture_linkage": "", 
-      "version": "Darwin Kernel Version 9.8.0: Wed Jul 15 16:55:01 PDT 2009; root:xnu-1228.15.4~1/RELEASE_I386", 
-      "release": "9.8.0", 
-      "network_name": "unic154.inaf.cnrs-gif.fr", 
+      "version": "Darwin Kernel Version 11.1.0: Tue Jul 26 16:07:11 PDT 2011; root:xnu-1699.22.81~1/RELEASE_X86_64", 
+      "release": "11.1.0", 
+      "network_name": "NeuroinformatiqueUNIC.local", 
       "processor": "i386"
-    }
-  }, 
-  {
-    "pk": 1, 
-    "model": "django_store.record", 
-    "fields": {
-      "script_arguments": "<parameters>", 
-      "platforms": [
-        1
-      ], 
-      "duration": 0.16250395774841309, 
-      "diff": "", 
-      "datastore": 1, 
-      "executable": 1, 
-      "parameters": 4, 
-      "label": "20110629-132505", 
-      "version": "f8dd5c07d524", 
-      "stdout_stderr": "", 
-      "repository": 1, 
-      "tags": "", 
-      "timestamp": "2011-06-29 13:25:05", 
-      "reason": "", 
-      "dependencies": [
-        5, 
-        7, 
-        2, 
-        1, 
-        4, 
-        6, 
-        3
-      ], 
-      "user": "", 
-      "output_data": [
-        1
-      ], 
-      "project": "TestProject", 
-      "input_data": [], 
-      "launch_mode": 1, 
-      "main_file": "main.py", 
-      "outcome": "'Eureka! Nobel prize here we come.'"
     }
   }, 
   {
@@ -239,25 +196,25 @@
       "platforms": [
         1
       ], 
-      "duration": 0.16177797317504883, 
+      "duration": 0.1399848461151123, 
       "diff": "", 
       "datastore": 1, 
+      "input_datastore": 2, 
       "executable": 1, 
       "parameters": 1, 
-      "label": "20110629-132518", 
-      "version": "f8dd5c07d524", 
+      "label": "20111013-172503", 
+      "version": "9164b57cd8dd", 
       "stdout_stderr": "", 
       "repository": 1, 
       "tags": "", 
-      "timestamp": "2011-06-29 13:25:18", 
+      "timestamp": "2011-10-13 17:25:03", 
       "reason": "", 
       "dependencies": [
-        5, 
-        7, 
-        2, 
-        1, 
         4, 
         6, 
+        2, 
+        1, 
+        5, 
         3
       ], 
       "user": "", 
@@ -279,25 +236,25 @@
       "platforms": [
         1
       ], 
-      "duration": 0.16460895538330078, 
+      "duration": 0.14345502853393555, 
       "diff": "", 
       "datastore": 1, 
+      "input_datastore": 2, 
       "executable": 1, 
       "parameters": 2, 
       "label": "haggling", 
-      "version": "f8dd5c07d524", 
+      "version": "9164b57cd8dd", 
       "stdout_stderr": "", 
       "repository": 1, 
       "tags": "foobar", 
-      "timestamp": "2011-06-29 13:25:24", 
+      "timestamp": "2011-10-13 17:25:07", 
       "reason": "determine whether the gourd is worth 3 or 4 shekels", 
       "dependencies": [
-        5, 
-        7, 
-        2, 
-        1, 
         4, 
         6, 
+        2, 
+        1, 
+        5, 
         3
       ], 
       "user": "", 
@@ -319,25 +276,25 @@
       "platforms": [
         1
       ], 
-      "duration": 0.16658616065979004, 
+      "duration": 0.13963103294372559, 
       "diff": "", 
       "datastore": 1, 
+      "input_datastore": 2, 
       "executable": 1, 
       "parameters": 5, 
-      "label": "20110629-132536", 
-      "version": "f8dd5c07d524", 
+      "label": "20111013-172514", 
+      "version": "9164b57cd8dd", 
       "stdout_stderr": "", 
       "repository": 1, 
       "tags": "", 
-      "timestamp": "2011-06-29 13:25:36", 
+      "timestamp": "2011-10-13 17:25:14", 
       "reason": "test effect of a smaller time constant", 
       "dependencies": [
-        5, 
-        7, 
-        2, 
-        1, 
         4, 
         6, 
+        2, 
+        1, 
+        5, 
         3
       ], 
       "user": "", 
@@ -359,25 +316,25 @@
       "platforms": [
         1
       ], 
-      "duration": 0.17115211486816406, 
+      "duration": 0.14166712760925293, 
       "diff": "", 
       "datastore": 1, 
+      "input_datastore": 2, 
       "executable": 1, 
       "parameters": 3, 
       "label": "haggling_repeat", 
-      "version": "f8dd5c07d524", 
+      "version": "9164b57cd8dd", 
       "stdout_stderr": "", 
       "repository": 1, 
       "tags": "", 
-      "timestamp": "2011-06-29 13:25:40", 
+      "timestamp": "2011-10-13 17:25:17", 
       "reason": "Repeat experiment haggling", 
       "dependencies": [
-        5, 
-        7, 
-        2, 
-        1, 
         4, 
         6, 
+        2, 
+        1, 
+        5, 
         3
       ], 
       "user": "", 
@@ -389,6 +346,29 @@
       "launch_mode": 1, 
       "main_file": "main.py", 
       "outcome": "The new record exactly matches the original."
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "tagging.tag", 
+    "fields": {
+      "name": "barfoo"
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "tagging.tag", 
+    "fields": {
+      "name": "foobar"
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "tagging.taggeditem", 
+    "fields": {
+      "tag": 1, 
+      "object_id": 3, 
+      "content_type": 10
     }
   }
 ]
