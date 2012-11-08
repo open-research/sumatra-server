@@ -1,47 +1,61 @@
 {% extends "base.html" %}
 {% load filters %}
-
-{% block title %}{{data.project_id}}: {{data.label}}{% endblock %}
+{% with data as record %}
+    
+{% block title %}{{data.project_id}}: {{record.label}}{% endblock %}
 
 {% block header %}
-<a href="..">{{data.project_id}}</a>: <i>{{data.label}}</i>
+<a href="..">{{data.project_id}}</a>: <i>{{record.label}}</i>
 {% endblock %}
 
 {% block content %}
 
 <table>
-    <tr><th>Label:</th><td>{{data.label}}</td></tr>
-    <tr><th>Reason:</th><td>{{data.reason}}</td></tr>
-    <tr><th>Outcome:</th><td>{{data.outcome}}</td></tr>
-    <tr><th>Timestamp:</th><td>{{data.timestamp|date:"d/m/Y H:i:s"}}</td></tr>
-    <tr><th>Duration:</th><td>{{data.duration|floatformat:"2"}}&nbsp;s</td></tr>
-    <tr><th>Executable:</th><td>{{data.executable.name}} version {{data.executable.version}} ({{data.executable.path}})</td></tr>
-    <tr><th>Launch mode:</th><td>{% ifequal data.launch_mode.type "SerialLaunchMode" %}serial{% else %}distributed, n={{data.launch_mode.get_parameters.n}}{% endifequal %}</td></tr>
-    <tr><th>Repository:</th><td>{{data.repository.url}}</td></tr>
-    <tr><th>Main file:</th><td>{{data.main_file}}</td></tr>
-    <tr><th>Version:</th><td>{{data.version}}{% if data.diff %}* (<a href="diff/">diff</a>){% endif %}</td></tr>
-    <tr><th>Arguments:</th><td>{{data.script_arguments}}</td></tr>
-    <tr><th>Tags:</th><td>{{data.tags|link:"../?tags=%s"}}</td></tr>
+    <tr><th>Label:</th><td>{{record.label}}</td></tr>
+    <tr><th>Reason:</th><td>{{record.reason}}</td></tr>
+    <tr><th>Outcome:</th><td>{{record.outcome}}</td></tr>
+    <tr><th>Timestamp:</th><td>{{record.timestamp|date:"d/m/Y H:i:s"}}</td></tr>
+    <tr><th>Duration:</th><td>{{record.duration|floatformat:"2"}}&nbsp;s</td></tr>
+    <tr><th>Executable:</th><td>{{record.executable.name}} version {{record.executable.version}} ({{record.executable.path}})</td></tr>
+    <tr><th>Launch mode:</th><td>{% ifequal record.launch_mode.type "SerialLaunchMode" %}serial{% else %}distributed, n={{record.launch_mode.get_parameters.n}}{% endifequal %}</td></tr>
+    <tr><th>Repository:</th><td>{{record.repository.url}}</td></tr>
+    <tr><th>Main file:</th><td>{{record.main_file}}</td></tr>
+    <tr><th>Version:</th><td>{{record.version}}{% if record.diff %}* (<a href="diff/">diff</a>){% endif %}</td></tr>
+    <tr><th>Arguments:</th><td>{{record.script_arguments}}</td></tr>
+    <tr><th>Tags:</th><td>{{record.tags|link:"../?tags=%s"}}</td></tr>
 </table>
 
-</form>
-
-<h3>Data files</h3>
+{% if record.input_data %}
+<h3>Input files</h3>
 <table>
-{% for file in data.output_data %}
+    <tr><td colspan="4">{{record.input_datastore.root}}</td></tr>
+{% for file in record.input_data %}
+  <tr class="{% cycle odd even %}"><td>{{file.path}}</td>
+                                   <td>{{file.digest}}</td>
+                                   <td>{{file.metadata.mimetype|default:""}}</td>
+                                   <td>{{file.metadata.size|filesizeformat}}</td></tr>
+{% endfor %}
+</table>
+{% endif %}
+
+<h3>Output files</h3>
+<table>
+    <tr><td colspan="4">{{record.input_datastore.root}}</td></tr>
+{% for file in record.output_data %}
   <tr class="{% cycle "odd" "even" %}"><td>{{file.path}}</td>
                                        <td>{{file.digest}}</td>
-                                       </tr>
+                                       <td>{{file.metadata.mimetype|default:""}}</td>
+                                       <td>{{file.metadata.size|filesizeformat}}</td></tr>
 {% endfor %}
 </table>
 
 <h3>Parameters</h3>
-{{data.parameters.content}}
+{{record.parameters.content}}
                         
 <h3>Dependencies</h3>
 <table class="fullwidth">
 <tr><th>Name</th><th>Path</th><th>Version</th></tr>
-{% for dep in data.dependencies %}
+{% for dep in record.dependencies %}
 <tr class="{% cycle "odd" "even" %}"><td>{{dep.name}}</td><td>{{dep.path}}</td><td>{{dep.version}}{% if dep.diff %}* (<a href="diff/{{dep.name}}">diff</a>){% endif %}</td></tr>{% endfor %}
 </table>
 
@@ -51,7 +65,7 @@
     <th colspan="2">Architecture</th><th>System type</th>
     <th>Release</th><th>Version</th>
 </tr>
-{% for platform in data.platforms %}
+{% for platform in record.platforms %}
 <tr class="{% cycle "odd" "even" %}">
     <td>{{platform.network_name}}</td>
     <td>{{platform.ip_addr}}</td>
@@ -64,10 +78,13 @@
 </tr>{% endfor %}
 </table>
 
-{% if data.stdout_stderr %}
+{% if record.stdout_stderr %}
 <h3>Stdout &amp; Stderr</h3>
-{{ data.stdout_stderr }}
+<pre>
+{{ record.stdout_stderr }}
+</pre>
 {% endif %}
 
 {% endblock %}
 
+{% endwith %}
