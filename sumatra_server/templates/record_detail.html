@@ -1,15 +1,14 @@
 {% extends "base.html" %}
 {% load filters %}
-{% with data as record %}
     
-{% block title %}{{data.project_id}}: {{record.label}}{% endblock %}
+{% block title %}{{data.project_id}}: {{data.label}}{% endblock %}
 
 {% block header %}
-<a href="..">{{data.project_id}}</a>: <i>{{record.label}}</i>
+<a href="..">{{data.project_id}}</a>: <i>{{data.label}}</i>
 {% endblock %}
 
 {% block content %}
-
+{% with record=data %}
 <table>
     <tr><th>Label:</th><td>{{record.label}}</td></tr>
     <tr><th>Reason:</th><td>{{record.reason}}</td></tr>
@@ -84,7 +83,5 @@
 {{ record.stdout_stderr }}
 </pre>
 {% endif %}
-
-{% endblock %}
-
 {% endwith %}
+{% endblock %}
