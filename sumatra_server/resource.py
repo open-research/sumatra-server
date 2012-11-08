@@ -25,7 +25,7 @@ def get_emitters_from_accept_header(request):
     return possible_emitters
 
 
-def determine_emitter(request, *args, **kwargs):        
+def determine_emitter(request, *args, **kwargs):
     if "emitter_format" in kwargs:       
         em = kwargs.pop('emitter_format', None)
     elif "format" in request.GET:

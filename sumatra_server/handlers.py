@@ -78,6 +78,8 @@ class RecordHandler(BaseHandler):
     def update(self, request, project, label):
         # this performs update if the record already exists, and create otherwise
         filter = {'project': project, 'label': label}
+        print "PUT -->", request.PUT
+        print "Data -->", request.data
         attrs = self.flatten_dict(request.data)
         #print attrs
         try:
@@ -156,15 +158,25 @@ class ProjectHandler(BaseHandler):
                 }
 
     def update(self, request, project):
-        """Create a new project and give the current user permission to access it."""
+        """
+        Create a new project and give the current user permission to access it,
+        or update the name and description of an existing project.
+        """
         if request.user.is_anonymous():
             return rc.FORBIDDEN
         prj, created = models.Project.objects.get_or_create(id=project)
+        changed = False
+        for attr in ("name", "description"):
+            if attr in request.data:
+                setattr(prj, attr, request.data[attr])
+                changed = True
+        if changed:
+            prj.save()
         if created:
             prj.projectpermission_set.create(user=request.user)
             return rc.CREATED
         else:
-            return rc.DUPLICATE_ENTRY
+            return rc.ALL_OK
 
 
 class PermissionListHandler(BaseHandler):
