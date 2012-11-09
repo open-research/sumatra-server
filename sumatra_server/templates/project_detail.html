@@ -7,7 +7,9 @@
 {% block content %}
 
 <p>{{data.description}}</p>
+{% if data.access %}
 <p>This project is accessible to {{data.access|join:", "}}</p>
+{% endif %}
 
 {% if data.tags %}<p><a href=".">Show all records</a></p>{% endif %}
 

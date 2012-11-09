@@ -9,6 +9,7 @@ from django.utils.http import urlquote
 from django.http import HttpResponseRedirect
 from sumatra_server.resource import determine_emitter
 
+
 class DjangoAuthentication(object):
     """
     Django authentication. 
@@ -19,7 +20,7 @@ class DjangoAuthentication(object):
             login_url = settings.LOGIN_URL
         self.login_url = login_url
         self.redirect_field_name = redirect_field_name
-        self.next = "/" # should use settings.LOGIN_REDIRECT_URL is defined
+        self.next = "/" # should use settings.LOGIN_REDIRECT_URL if defined
     
     def is_authenticated(self, request):
         self.next = urlquote(request.get_full_path())

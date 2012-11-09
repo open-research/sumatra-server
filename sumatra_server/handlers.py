@@ -1,4 +1,4 @@
-from piston.handler import BaseHandler
+from piston.handler import BaseHandler, AnonymousBaseHandler
 from piston.utils import rc, validate
 from sumatra.recordstore.django_store import models
 import datetime
@@ -44,6 +44,35 @@ def check_permissions(func):
     return wrapper
 
 
+class AnonymousRecordHandler(AnonymousBaseHandler):
+    allowed_methods = ('GET',)
+    model = models.Record
+    fields = ('label', 'timestamp', 'reason', 'outcome', 'duration',
+              'executable', 'repository', 'main_file', 'version', 'diff',
+              'dependencies', 'parameters', 'launch_mode', 'datastore',
+              'output_data', 'platforms', 'tags', 'user', 'project_id',
+              'script_arguments', 'input_datastore', 'input_data',
+              'stdout_stderr')
+    template = "record_detail.html"
+
+    @staticmethod
+    def tags(obj):
+        return parse_tag_input(obj.tags)
+    
+    @classmethod
+    def project_id(self, record):
+        return record.project.id
+
+    def read(self, request, project, label):
+        if not models.Project.objects.filter(id=project, projectpermission__user__username='anonymous').count():
+            return rc.FORBIDDEN
+        filter = {'project': project, 'label': label}
+        try:
+            return self.queryset(request).get(**filter)
+        except ObjectDoesNotExist:
+            return rc.NOT_FOUND
+        
+
 class RecordHandler(BaseHandler):
     allowed_methods = ('GET', 'PUT', 'DELETE')
     model = models.Record
@@ -54,6 +83,7 @@ class RecordHandler(BaseHandler):
               'script_arguments', 'input_datastore', 'input_data',
               'stdout_stderr')
     template = "record_detail.html"
+    anonymous = AnonymousRecordHandler
     
     @staticmethod
     def tags(obj):
@@ -132,9 +162,34 @@ class RecordHandler(BaseHandler):
         return response
 
 
+class AnonymousProjectHandler(AnonymousBaseHandler):
+    allowed_methods = ('GET',)
+    template = "project_detail.html"
+
+    def read(self, request, project):
+        try:
+            prj = models.Project.objects.get(id=project, projectpermission__user__username='anonymous')
+        except models.Project.DoesNotExist:
+            return rc.FORBIDDEN
+        records = prj.record_set.all()
+        tags = request.GET.get("tags", None)
+        if tags:
+            records = records.filter(tags__contains=tags)
+        protocol = request.is_secure() and "https" or "http"
+        project_uri = "%s://%s%s" % (protocol, request.get_host(), reverse("sumatra-project", args=[prj.id]))
+        return {
+                    'id': prj.id,
+                    'name': prj.get_name(),
+                    'description': prj.description,
+                    'records': [ "%s%s/" % (project_uri, rec.label)
+                                for rec in records],
+                    'tags': tags,
+                }
+
 class ProjectHandler(BaseHandler):
     allowed_methods = ('GET', 'PUT')
     template = "project_detail.html"
+    anonymous = AnonymousProjectHandler
     
     def read(self, request, project):
         try:

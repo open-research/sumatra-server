@@ -9,7 +9,7 @@ auth = AuthenticationDispatcher({'html': DjangoAuthentication()},
 
 record_resource = Resource(RecordHandler, authentication=auth)
 project_resource = Resource(ProjectHandler, authentication=auth)
-projectlist_resource = Resource(ProjectListHandler, authentication=auth)
+projectlist_resource = Resource(ProjectListHandler)
 permissionlist_resource = Resource(PermissionListHandler, authentication=auth)
 print "AUTH:", project_resource.authentication
 

@@ -8,3 +8,4 @@ register = template.Library()
 @register.simple_tag
 def insert_permission_form():
     return PermissionsForm()["user"]
+
