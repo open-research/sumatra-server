@@ -27,29 +27,35 @@
 {% if record.input_data %}
 <h3>Input files</h3>
 <table>
-    <tr><td colspan="4">{{record.input_datastore.root}}</td></tr>
+    <tr><td colspan="4">{{record.input_datastore.parameters.root}}</td></tr>
 {% for file in record.input_data %}
-  <tr class="{% cycle odd even %}"><td>{{file.path}}</td>
-                                   <td>{{file.digest}}</td>
-                                   <td>{{file.metadata.mimetype|default:""}}</td>
-                                   <td>{{file.metadata.size|filesizeformat}}</td></tr>
+  <tr class="{% cycle odd even %}">
+        <td>{{file.path}}</td>
+        <td>{{file.digest}}</td>
+        <td>{{file.metadata.mimetype|default:""}}</td>
+        <td>{{file.metadata.size|filesizeformat}}</td></tr>
 {% endfor %}
 </table>
 {% endif %}
 
 <h3>Output files</h3>
 <table>
-    <tr><td colspan="4">{{record.input_datastore.root}}</td></tr>
+    <tr><td colspan="4">{{record.datastore.parameters.root}}</td></tr>
 {% for file in record.output_data %}
-  <tr class="{% cycle "odd" "even" %}"><td>{{file.path}}</td>
-                                       <td>{{file.digest}}</td>
-                                       <td>{{file.metadata.mimetype|default:""}}</td>
-                                       <td>{{file.metadata.size|filesizeformat}}</td></tr>
+  <tr class="{% cycle "odd" "even" %}">
+        {% if record.datastore.type == "MirroredFileSystemDataStore" %}
+        <td><a href="{{record.datastore.parameters.mirror_base_url}}{{file.path}}">{{file.path}}</a></td>    
+        {% else %}
+        <td>{{file.path}}</td>
+        {% endif %}
+        <td>{{file.digest}}</td>
+        <td>{{file.metadata.mimetype|default:""}}</td>
+        <td>{{file.metadata.size|filesizeformat}}</td></tr>
 {% endfor %}
 </table>
 
 <h3>Parameters</h3>
-{{record.parameters.content}}
+{{record.parameters.content|linebreaksbr}}
                         
 <h3>Dependencies</h3>
 <table class="fullwidth">
