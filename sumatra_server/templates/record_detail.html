@@ -21,7 +21,7 @@
     <tr><th>Main file:</th><td>{{record.main_file}}</td></tr>
     <tr><th>Version:</th><td>{{record.version}}{% if record.diff %}* (<a href="diff/">diff</a>){% endif %}</td></tr>
     <tr><th>Arguments:</th><td>{{record.script_arguments}}</td></tr>
-    <tr><th>Tags:</th><td>{{record.tags|link:"../?tags=%s"}}</td></tr>
+    <tr><th>Tags:</th><td>{% for tag in record.tags %}<a href="../?tags={{tag}}">{{tag}}</a> {% endfor %}</td></tr>
 </table>
 
 {% if record.input_data %}
