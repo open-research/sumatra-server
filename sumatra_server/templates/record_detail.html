@@ -4,30 +4,72 @@
 {% block title %}{{data.project_id}}: {{data.label}}{% endblock %}
 
 {% block header %}
-<a href="..">{{data.project_id}}</a>: <i>{{data.label}}</i>
+<a href="..">{{data.project_id}}</a></i>
 {% endblock %}
 
 {% block content %}
 {% with record=data %}
-<table>
-    <tr><th>Label:</th><td>{{record.label}}</td></tr>
-    <tr><th>Reason:</th><td>{{record.reason}}</td></tr>
-    <tr><th>Outcome:</th><td>{{record.outcome}}</td></tr>
-    <tr><th>Timestamp:</th><td>{{record.timestamp|date:"d/m/Y H:i:s"}}</td></tr>
-    <tr><th>Duration:</th><td>{{record.duration|floatformat:"2"}}&nbsp;s</td></tr>
-    <tr><th>Executable:</th><td>{{record.executable.name}} version {{record.executable.version}} ({{record.executable.path}})</td></tr>
-    <tr><th>Launch mode:</th><td>{% ifequal record.launch_mode.type "SerialLaunchMode" %}serial{% else %}distributed, n={{record.launch_mode.get_parameters.n}}{% endifequal %}</td></tr>
-    <tr><th>Repository:</th><td>{{record.repository.url|urlize}}</td></tr>
-    <tr><th>Main file:</th><td>{{record.main_file}}</td></tr>
-    <tr><th>Version:</th><td>{{record.version}}{% if record.diff %}* (<a href="diff/">diff</a>){% endif %}</td></tr>
-    <tr><th>Arguments:</th><td>{{record.script_arguments}}</td></tr>
-    <tr><th>Tags:</th><td>{% for tag in record.tags %}<a href="../?tags={{tag}}">{{tag}}</a> {% endfor %}</td></tr>
+
+<table class="table table-condensed table-bordered">
+<tr><th>Label</th><td>{{data.label}}</td></tr>
+{% if record.tags %}
+<tr><th>Tags</th>
+    <td>{% for tag in record.tags %}<a class='btn btn-mini' href="../?tags={{tag}}">{{tag}}</a> {% endfor %}</td></tr>
+{% endif %}
+
+{% if record.reason %}
+<tr><th>Motivation</th>
+    <td>{{record.reason}}</td></tr>
+{% endif %}
+{% if record.outcome %}
+<tr><th>Outcome</th><td>{{record.outcome}}</td>
+{% endif %}
+<tr><th>Date</th><td>{{record.timestamp|date:"d/m/Y"}}</td></tr>
+<tr><th>Time</th><td>{{record.timestamp|time:"H:i:s"}}</td></tr>
+<tr><th>Duration</th><td>{{record.duration|floatformat:"2"}}&nbsp;s</td></tr>
+<tr><th>Launch mode</th><td>{% ifequal record.launch_mode.type "SerialLaunchMode" %}serial{% else %}distributed, n={{record.launch_mode.get_parameters.n}}{% endifequal %}</td></tr>
 </table>
 
+<h3>Code</h3>
+
+<table class="table table-striped table-condensed table-bordered">
+    <thead>
+        <th>Executable</th>
+        <th>Repository</th>
+        <th>Version</th>
+        <th>Main file</th>
+        <th>Arguments</th>
+    </thead>
+    <tr>
+        <td>{{record.executable.name}} {{record.executable.version}} ({{record.executable.path}})</td>
+        <td>{{record.repository.url|urlize}}</td>
+        <td>{{record.version}}{% if record.diff %}* (<a href="diff/">diff</a>){% endif %}</td>
+        <!-- should have diff as popover -->
+        <td>{{record.main_file}}</td>
+        <td>{{record.script_arguments}}</td>
+    </tr>
+</table>
+
+<h4>Dependencies</h4>
+<table class="table table-striped table-condensed table-bordered">
+<thead>
+<tr><th>Name</th><th>Path</th><th>Version</th></tr>
+</thead>
+<tbody>
+{% for dep in record.dependencies %}
+<tr class="{% cycle "odd" "even" %}"><td>{{dep.name}}</td><td>{{dep.path}}</td><td>{{dep.version}}{% if dep.diff %}* (<a href="diff/{{dep.name}}">diff</a>){% endif %}</td></tr>{% endfor %}
+</tbody>
+</table>
+
+<h3>Inputs</h3>
+
 {% if record.input_data %}
-<h3>Input files</h3>
-<table>
-    <tr><td colspan="4">{{record.input_datastore.parameters.root}}</td></tr>
+<h4>Input files</h4>
+<table class="table table-striped table-condensed table-bordered">
+<thead>
+<tr><td colspan="4">{{record.input_datastore.parameters.root}}</td></tr>
+</thead>
+<tbody>
 {% for file in record.input_data %}
   <tr class="{% cycle odd even %}">
         <td>{{file.path}}</td>
@@ -35,14 +77,27 @@
         <td>{{file.metadata.mimetype|default:""}}</td>
         <td>{{file.metadata.size|filesizeformat}}</td></tr>
 {% endfor %}
+</tbody>
 </table>
 {% endif %}
 
-<h3>Output files</h3>
-<table>
-    <tr><td colspan="4">{{record.datastore.parameters.root}}</td></tr>
+{% if record.parameters %}
+<h4>Parameters</h4>
+{{record.parameters.content|linebreaksbr}}
+{% endif %}
+
+
+<h3>Outputs</h3>
+
+{% if record.output_data %}
+<h4>Output files</h4>
+<table class="table table-striped table-condensed table-bordered">
+<thead>
+<tr><td colspan="4">{{record.datastore.parameters.root}}</td></tr>
+</thead>
+<tbody>
 {% for file in record.output_data %}
-  <tr class="{% cycle "odd" "even" %}">
+  <tr>
         {% if record.datastore.type == "MirroredFileSystemDataStore" %}
         <td><a href="{{record.datastore.parameters.mirror_base_url}}{{file.path}}">{{file.path}}</a></td>    
         {% else %}
@@ -52,24 +107,26 @@
         <td>{{file.metadata.mimetype|default:""}}</td>
         <td>{{file.metadata.size|filesizeformat}}</td></tr>
 {% endfor %}
+</tbody>
 </table>
+{% endif %}
 
-<h3>Parameters</h3>
-{{record.parameters.content|linebreaksbr}}
-                        
-<h3>Dependencies</h3>
-<table class="fullwidth">
-<tr><th>Name</th><th>Path</th><th>Version</th></tr>
-{% for dep in record.dependencies %}
-<tr class="{% cycle "odd" "even" %}"><td>{{dep.name}}</td><td>{{dep.path}}</td><td>{{dep.version}}{% if dep.diff %}* (<a href="diff/{{dep.name}}">diff</a>){% endif %}</td></tr>{% endfor %}
-</table>
+{% if record.stdout_stderr %}
+<h4>Stdout &amp; Stderr</h4>
+<pre>
+{{ record.stdout_stderr }}
+</pre>
+{% endif %}
 
-<h3>Platform information</h3>
-<table class="fullwidth">
+<h3>Environment</h3>
+<table class="table table-striped table-condensed table-bordered">
+<thead>
 <tr><th>Name</th><th>IP address</th><th>Processor</th>
     <th colspan="2">Architecture</th><th>System type</th>
     <th>Release</th><th>Version</th>
 </tr>
+</thead>
+<tbody>
 {% for platform in record.platforms %}
 <tr class="{% cycle "odd" "even" %}">
     <td>{{platform.network_name}}</td>
@@ -81,13 +138,8 @@
     <td>{{platform.release}}</td>
     <td>{{platform.version}}</td>
 </tr>{% endfor %}
+</tbody>
 </table>
 
-{% if record.stdout_stderr %}
-<h3>Stdout &amp; Stderr</h3>
-<pre>
-{{ record.stdout_stderr }}
-</pre>
-{% endif %}
 {% endwith %}
 {% endblock %}

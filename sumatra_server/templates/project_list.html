@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load markup %}
 
 {% block title %}List of projects{% endblock %}
 
@@ -7,15 +8,18 @@
 {% block content %}
 
 {% if data %}
-<table class="fullwidth">
-    <tr><th>Name</th><th>Description</th></tr>
     {% for project in data %}
-    <tr class="{% cycle "odd" "even"%}"><td><a href="{{project.uri}}">{{project.name}}</a></td>
-        <td>{{project.description}}</td></tr>
+    <div class="well">
+        <a href="{{project.uri}}"><h3>{{project.name}}</h3></a>
+        {{project.description|restructuredtext}}
+        <span class="label">Last updated: {{project.last_updated}}</span>
+    </div>
+    
     {% endfor %}
-</table>
 {% else %}
 <p>You have no projects.</p>
 {% endif %}
 
+
 {% endblock %}
+

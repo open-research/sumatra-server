@@ -1,19 +1,21 @@
 {% extends "base.html" %}
+{% load markup %}
 
 {% block title %}Project {{data.name}}{% endblock %}
 
 {% block header %}{{data.name}}{% endblock %}
 
 {% block content %}
-
-<p>{{data.description}}</p>
+<a class="edit btn btn-small pull-left" href="#" data-toggle="modal" data-target="#edit_description"><i class="icon-pencil"></i></a>
+<p>{{data.description|restructuredtext}}</p>
 {% if data.access %}
 <p>This project is accessible to {{data.access|join:", "}}</p>
 {% endif %}
 
 {% if data.tags %}<p><a href=".">Show all records</a></p>{% endif %}
 
-<table class="main">
+<table class="main table table-striped table-condensed table-bordered">
+    <thead>
     <tr>
         <th>Label</th>
         <th>Reason</th>
@@ -27,6 +29,47 @@
         <th>Arguments</th>
         <th>Tags</th>
     </tr>
+    </thead>
 </table>
+
+<div id="edit_description" class="modal hide">
+  <form class="edit-form" method="PUT" action=".">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Editing Project</h3>
+  </div>
+  <div class="modal-body">
+    <label>Name</label><input type="text" id="prj-name" name="name" value="{{data.name}}">
+    <label>Description</label><input type="text" id="prj-descr" name="description" value="{{data.description}}">
+  </div>
+  <div class="modal-footer">
+    <button class="save-btn btn btn-primary">Save changes</button>
+  </div>
+  </form>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+$('.edit-form').on('submit', function() {
+    $.ajax({ 
+        type: "PUT",
+        contentType: "application/json; charset=UTF-8",
+        url: this.action, 
+        data: JSON.stringify({"name": $("#prj-name").val(), "description": $("#prj-descr").val()}, null, 2),
+        context: this,
+        success: function(data, textStatus, jqXHR) {
+            $("#edit_description").modal("hide");
+            window.location.reload();
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert('something went wrong ' + textStatus + errorThrown);  
+        }
+    });
+    return false;
+});
+</script>
 
 {% endblock %}
