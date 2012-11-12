@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% load markup %}
 
-{% block title %}Project {{data.name}}{% endblock %}
+{% block title %}{{data.name}}{% endblock %}
 
 {% block header %}{{data.name}}{% endblock %}
 
 {% block content %}
-<a class="edit btn btn-small pull-left" href="#" data-toggle="modal" data-target="#edit_description"><i class="icon-pencil"></i></a>
+<a class="edit btn btn-small pull-left" href="#" data-toggle="modal" data-target="#edit_description"><i class="icon-pencil"></i></a>&nbsp;
 <p>{{data.description|restructuredtext}}</p>
 {% if data.access %}
 <p>This project is accessible to {{data.access|join:", "}}</p>
@@ -39,8 +39,8 @@
     <h3>Editing Project</h3>
   </div>
   <div class="modal-body">
-    <label>Name</label><input type="text" id="prj-name" name="name" value="{{data.name}}">
-    <label>Description</label><input type="text" id="prj-descr" name="description" value="{{data.description}}">
+    <label>Name</label><input type="text" id="prj-name" name="name" value="{{data.name}}" class="input-block-level">
+    <label>Description</label><textarea rows="8" id="prj-descr" name="description" class="input-block-level">{{data.description}}</textarea>
   </div>
   <div class="modal-footer">
     <button class="save-btn btn btn-primary">Save changes</button>
@@ -52,24 +52,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-$('.edit-form').on('submit', function() {
-    $.ajax({ 
-        type: "PUT",
-        contentType: "application/json; charset=UTF-8",
-        url: this.action, 
-        data: JSON.stringify({"name": $("#prj-name").val(), "description": $("#prj-descr").val()}, null, 2),
-        context: this,
-        success: function(data, textStatus, jqXHR) {
-            $("#edit_description").modal("hide");
-            window.location.reload();
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            alert('something went wrong ' + textStatus + errorThrown);  
-        }
-    });
-    return false;
-});
-</script>
-
+    <script type="text/javascript" src="/media/js/smtserve.js"></script>
 {% endblock %}
