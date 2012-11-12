@@ -275,9 +275,10 @@ class ProjectListHandler(BaseHandler):
                     "name": prj.get_name(),
                     "description": prj.description,
                     "uri": "%s://%s%s" % (protocol, request.get_host(), reverse("sumatra-project", args=[prj.id])),
+                    "last_updated": prj.last_updated()
                   }
-                  for prj in models.Project.objects.filter(projectpermission__user=user) ]
-        
+                  for prj in reversed(sorted(models.Project.objects.filter(projectpermission__user=user),
+                                             key=lambda prj: prj.last_updated()))]
 
 # the following are currently defined only to suppress the 'id'
 # in the output
