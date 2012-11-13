@@ -6,7 +6,7 @@
 {% block in_projects %} class="active"{% endblock %}
 
 {% block header %}
-<a href="..">{{data.project_id}}</a></i>
+<a href=".." id="prj-name">{{data.project_id}}</a></i>
 {% endblock %}
 
 {% block content %}
@@ -144,4 +144,16 @@
 </table>
 
 {% endwith %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+function get_project_name(project_data) {
+    $("#prj-name").html(project_data.name);
+};
+    
+$(document).ready(function() {
+    $.getJSON("..", get_project_name);
+});
+</script>
 {% endblock %}
