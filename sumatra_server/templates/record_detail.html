@@ -3,6 +3,8 @@
     
 {% block title %}{{data.project_id}}: {{data.label}}{% endblock %}
 
+{% block in_projects %} class="active"{% endblock %}
+
 {% block header %}
 <a href="..">{{data.project_id}}</a></i>
 {% endblock %}
@@ -14,7 +16,7 @@
 <tr><th>Label</th><td>{{data.label}}</td></tr>
 {% if record.tags %}
 <tr><th>Tags</th>
-    <td>{% for tag in record.tags %}<a class='btn btn-mini' href="../?tags={{tag}}">{{tag}}</a> {% endfor %}</td></tr>
+    <td>{% for tag in record.tags %}<a class='label' href="../?tags={{tag}}">{{tag}}</a> {% endfor %}</td></tr>
 {% endif %}
 
 {% if record.reason %}

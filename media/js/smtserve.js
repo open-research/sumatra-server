@@ -4,7 +4,7 @@
 
 function show_record(data) {
     data.duration = data.duration.toFixed(2)
-    var template = '<tr class="odd"><td><a href="{{label}}/">{{label}}</a></td><td>{{reason}}</td><td>{{outcome}}</td><td>{{duration}}&nbsp;s</td><td>{{timestamp}}</td><td>{{executable.name}} {{executable.version}}</td><td>{{repository.url}}</td><td>{{version}}</td><td>{{main_file}}</td><td>{{script_arguments}}</td><td>{{#tags}}<a class="btn btn-mini" href="?tags={{.}}">{{.}}</a> {{/tags}}</td></tr>';
+    var template = '<tr class="odd"><td><a href="{{label}}/">{{label}}</a></td><td>{{reason}}</td><td>{{outcome}}</td><td>{{duration}}&nbsp;s</td><td>{{timestamp}}</td><td>{{executable.name}} {{executable.version}}</td><td>{{repository.url}}</td><td>{{version}}</td><td>{{main_file}}</td><td>{{script_arguments}}</td><td>{{#tags}}<a href="?tags={{.}}" class="label">{{.}}</a> {{/tags}}</td></tr>';
     var html = Mustache.to_html(template, data);
     $('table.main').append(html);
 }

@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% load form_tags %}
 
-{% block title %}Project {{data.name}}{% endblock %}
+{% block title %}{{data.name}}{% endblock %}
+
+{% block in_projects %} class="active"{% endblock %}
 
 {% block header %}<a href="..">{{data.name}}</a>{% endblock %}
 

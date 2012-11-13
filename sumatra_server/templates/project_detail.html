@@ -3,10 +3,11 @@
 
 {% block title %}{{data.name}}{% endblock %}
 
-{% block header %}{{data.name}}{% endblock %}
+{% block in_projects %} class="active"{% endblock %}
+
+{% block header %}{{data.name}} <a class="edit btn btn-small" href="#" data-toggle="modal" data-target="#edit_description"><i class="icon-pencil"></i></a>&nbsp;{% endblock %}
 
 {% block content %}
-<a class="edit btn btn-small pull-left" href="#" data-toggle="modal" data-target="#edit_description"><i class="icon-pencil"></i></a>&nbsp;
 <p>{{data.description|restructuredtext}}</p>
 {% if data.access %}
 <p>This project is accessible to {{data.access|join:", "}}</p>
