@@ -71,7 +71,7 @@ class AnonymousRecordHandler(AnonymousBaseHandler):
             return self.queryset(request).get(**filter)
         except ObjectDoesNotExist:
             return rc.NOT_FOUND
-        
+
 
 class RecordHandler(BaseHandler):
     allowed_methods = ('GET', 'PUT', 'DELETE')
@@ -280,22 +280,26 @@ class ProjectListHandler(BaseHandler):
                   for prj in reversed(sorted(models.Project.objects.filter(projectpermission__user=user),
                                              key=lambda prj: prj.last_updated()))]
 
+
 # the following are currently defined only to suppress the 'id'
 # in the output
 
-class ExecutableHandler(BaseHandler):
+class ExecutableHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.Executable
-    
-class ParameterSetHandler(BaseHandler):
+
+
+class ParameterSetHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.ParameterSet
-    
-class RepositoryHandler(BaseHandler):
+
+
+class RepositoryHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.Repository
-    
-class LaunchModeHandler(BaseHandler):
+
+
+class LaunchModeHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.LaunchMode
     fields = ('type', 'parameters')
@@ -310,7 +314,7 @@ class LaunchModeHandler(BaseHandler):
         return value 
     
     
-class DatastoreHandler(BaseHandler):
+class DatastoreHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.Datastore
     fields = ('type', 'parameters')
@@ -325,15 +329,17 @@ class DatastoreHandler(BaseHandler):
         return value
     
     
-class PlatformHandler(BaseHandler):
+class PlatformHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.PlatformInformation
+
     
-class DependencyHandler(BaseHandler):
+class DependencyHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.Dependency
 
-class DataKeyHandler(BaseHandler):
+
+class DataKeyHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.DataKey
     fields = ('path', 'digest', 'metadata')
