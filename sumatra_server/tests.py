@@ -2,13 +2,13 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.test.client import Client
-from django.conf import settings
+
 try:
     import json
 except ImportError:
     import simplejson as json
 import base64
-#from pprint import pprint
+
 
 OK = 200
 CREATED = 201
@@ -20,13 +20,16 @@ NO_CONTENT = 204
 def deunicode(v):
     """Convert unicode keys and values to str"""
     if isinstance(v, dict):
-        for kk,vv in v.items():
-            v[str(kk)] = deunicode(vv)
+        new_v = {}
+        for kk, vv in v.items():
+            new_v[str(kk)] = deunicode(vv)
     elif isinstance(v, unicode):
-        v = str(v)
+        new_v = str(v)
     elif isinstance(v, list):
-        v = [deunicode(d) for d in v]
-    return v
+        new_v = [deunicode(d) for d in v]
+    else:
+        new_v = v
+    return new_v
 
 
 class BaseTestCase(TestCase):
@@ -48,11 +51,11 @@ class BaseTestCase(TestCase):
         self.assertEqual(mimetype, desired_mimetype)
 
 
-class ProjectListHandlerTest(BaseTestCase):    
-    
+class ProjectListHandlerTest(BaseTestCase):
+
     #def setUp(self):
     #    self.client.login(username="testuser", password="abc123")
-    
+
     def test_GET_no_data(self):
         prj_list_uri = reverse("sumatra-project-list")
         response = self.client.get(prj_list_uri, {}, **self.extra)
@@ -63,20 +66,20 @@ class ProjectListHandlerTest(BaseTestCase):
         self.assertEqual(len(data), 1)
         prj = data[0]
         self.assertEqual(prj["uri"], "http://testserver%sTestProject/" % prj_list_uri)
-        
+
     def test_GET_format_html(self):
         self.client.login(username="testuser", password="abc123")
         prj_list_uri = reverse("sumatra-project-list")
         response = self.client.get(prj_list_uri, {"format": "html"})
         self.failUnlessEqual(response.status_code, OK)
         self.assertMimeType(response, "text/html")
-        
-        
+
+
 class ProjectHandlerTest(BaseTestCase):
-    
+
     #def setUp(self):
     #    self.client.login(username="testuser", password="abc123")
-        
+
     def test_GET_no_data(self):
         prj_uri = reverse("sumatra-project",
                           kwargs={"project": "TestProject"})
@@ -90,12 +93,12 @@ class ProjectHandlerTest(BaseTestCase):
         assert "testuser" in data["access"]
         assert isinstance(data["records"], list)
         for record in data["records"]:
-            touch = self.client.get(record, {}, **self.extra) # should perhaps add support for HEAD to the server
+            touch = self.client.get(record, {}, **self.extra)  # should perhaps add support for HEAD to the server
             self.assertEqual(touch.status_code, OK)
-        
-        
+
+
 class RecordHandlerTest(BaseTestCase):
-    
+
     def test_GET_no_data(self):
         label = "haggling"
         rec_uri = reverse("sumatra-record",
@@ -109,20 +112,22 @@ class RecordHandlerTest(BaseTestCase):
         assert isinstance(data, dict)
         self.assertEqual(data["label"], label)
         self.assertEqual(set(data.keys()),
-                         set(("executable","label","reason",
-                              "duration","executable","repository",
-                              "main_file","version","parameters",
-                              "launch_mode","datastore","outcome",
-                              "output_data","timestamp","tags","diff",
-                              "user","dependencies", "platforms",
+                         set(("executable", "label", "reason",
+                              "duration", "executable", "repository",
+                              "main_file", "version", "parameters",
+                              "launch_mode", "datastore", "outcome",
+                              "output_data", "timestamp", "tags", "diff",
+                              "user", "dependencies", "platforms",
                               "project_id", "input_data", "input_datastore",
                               "script_arguments", "stdout_stderr")))
+        #import pdb; pdb.set_trace()
         self.assertEqual(data["tags"], ["foobar"])
         self.assertEqual(data["output_data"][0]["path"], "example2.dat")
         self.assertIsInstance(data["output_data"][0]["metadata"], dict)
-        
+
+
     def test_GET_format_html(self):
-        self.extra = {} # use Django auth, not HTTP Basic
+        self.extra = {}  # use Django auth, not HTTP Basic
         self.client.login(username="testuser", password="abc123")
         label = "haggling"
         rec_uri = reverse("sumatra-record",
@@ -131,7 +136,7 @@ class RecordHandlerTest(BaseTestCase):
         response = self.client.get(rec_uri, {"format": "html"}, **self.extra)
         self.failUnlessEqual(response.status_code, OK)
         self.assertMimeType(response, "text/html")
-        
+
     def test_GET_not_authenticated(self):
         label = "haggling"
         rec_uri = reverse("sumatra-record",
@@ -140,7 +145,7 @@ class RecordHandlerTest(BaseTestCase):
         response = self.client.get(rec_uri, {})
         print response.content
         self.assertEqual(response.status_code, UNAUTHORIZED)
-        
+
     def test_GET_nonexistent_record(self):
         label = "iquegfxnqiuehfiomehxgo"
         rec_uri = reverse("sumatra-record",
@@ -148,9 +153,9 @@ class RecordHandlerTest(BaseTestCase):
                                   "label": label})
         response = self.client.get(rec_uri, {}, **self.extra)
         self.failUnlessEqual(response.status_code, NOT_FOUND)
-    
+
     def test_GET_Accept_html(self):
-        self.extra = {} # use Django auth, not HTTP Basic
+        self.extra = {}  # use Django auth, not HTTP Basic
         self.client.login(username="testuser", password="abc123")
         label = "haggling"
         rec_uri = reverse("sumatra-record",
@@ -159,7 +164,7 @@ class RecordHandlerTest(BaseTestCase):
         response = self.client.get(rec_uri, {}, Accept="text/html", **self.extra)
         self.failUnlessEqual(response.status_code, OK)
         self.assertMimeType(response, "text/html")
-    
+
     def test_PUT_new_record_json(self):
         new_record = {
             "label": "abcdef",
@@ -174,6 +179,7 @@ class RecordHandlerTest(BaseTestCase):
             "repository": {
                 "url": "iuhnhc;<s",
                 "type": "iufvbfgbjlml",
+                "upstream": None
             },
             "main_file": "OIYUGUIYFU",
             "version": "LUGNYGNYGu",
@@ -188,13 +194,13 @@ class RecordHandlerTest(BaseTestCase):
             }],
             "script_arguments": "p8yupyrprutot",
             "launch_mode": {
-                "type": "OIUNIU6nkjgbun", 
+                "type": "OIUNIU6nkjgbun",
                 "parameters": {},
             },
             "datastore": {
                 "type": "mosigcqpoejf;",
                 "parameters": {
-                    "root": "/path/to/output/data"   
+                    "root": "/path/to/output/data"
                 }
             },
             "input_datastore": {
@@ -220,16 +226,17 @@ class RecordHandlerTest(BaseTestCase):
                 "name": "mohuuyfbn",
                 "module": "ouitfvbtfky",
                 "diff": "liugnig,lug",
-                }],
+                "source": None,
+            }],
             "platforms": [{
-                "system_name": "liugiuyhiuyg", 
-                "ip_addr": "igng,iihih,i", 
-                "architecture_bits": "vmsilughcqioej;", 
-                "machine": "cligcnquefgx", 
-                "architecture_linkage": "uygbytfkg", 
-                "version": "luyhtdkguhl,h", 
-                "release": "lufuytdydy", 
-                "network_name": "ouifbf67", 
+                "system_name": "liugiuyhiuyg",
+                "ip_addr": "igng,iihih,i",
+                "architecture_bits": "vmsilughcqioej;",
+                "machine": "cligcnquefgx",
+                "architecture_linkage": "uygbytfkg",
+                "version": "luyhtdkguhl,h",
+                "release": "lufuytdydy",
+                "network_name": "ouifbf67",
                 "processor": "iugonuyginugugu"
             }],
         }
@@ -237,10 +244,10 @@ class RecordHandlerTest(BaseTestCase):
                           kwargs={"project": "TestProject"})
         rec_uri = "%s%s/" % (prj_uri, new_record["label"])
         response = self.client.put(rec_uri, data=json.dumps(new_record),
-                                   content_type="application/json",**self.extra)
+                                   content_type="application/json", **self.extra)
         print response.content
         self.assertEqual(response.status_code, CREATED)
-        
+
         response = self.client.get(rec_uri, {}, **self.extra)
         self.assertEqual(response.status_code, OK)
         #pprint(deunicode(json.loads(response.content)))
@@ -248,7 +255,7 @@ class RecordHandlerTest(BaseTestCase):
         self.maxDiff = None
         #import pdb; pdb.set_trace()
         self.assertEqual(new_record, deunicode(json.loads(response.content)))
-        
+
     def test_PUT_existing_record_json(self):
         prj_uri = reverse("sumatra-project",
                           kwargs={"project": "TestProject"})
@@ -260,10 +267,10 @@ class RecordHandlerTest(BaseTestCase):
             "version": "this should not be updated"
         }
         response = self.client.put(rec_uri, data=json.dumps(update),
-                                   content_type="application/json",**self.extra)
+                                   content_type="application/json", **self.extra)
         print response.content
         self.assertEqual(response.status_code, OK)
-        
+
         response = self.client.get(rec_uri, {}, **self.extra)
         self.assertEqual(response.status_code, OK)
         data = json.loads(response.content)
@@ -273,7 +280,7 @@ class RecordHandlerTest(BaseTestCase):
         self.assertEqual(data["outcome"], update["outcome"])
         self.assertEqual(set(data["tags"]), set(update["tags"]))
         self.assertNotEqual(set(data["version"]), set(update["version"]))
-    
+
     def test_DELETE_existing_record(self):
         label = "20111013-172503"
         rec_uri = reverse("sumatra-record",
@@ -281,15 +288,15 @@ class RecordHandlerTest(BaseTestCase):
                                   "label": label})
         response = self.client.get(rec_uri, {}, **self.extra)
         self.assertEqual(response.status_code, OK)
-        
+
         response = self.client.delete(rec_uri, {}, **self.extra)
         self.assertEqual(response.status_code, NO_CONTENT)
-        
+
         response = self.client.get(rec_uri, {}, **self.extra)
         self.assertEqual(response.status_code, NOT_FOUND)
-        
+
     def test_DELETE_nonexistent_record(self):
-        label =  "mochirsueghcnisuercgheiosg"
+        label = "mochirsueghcnisuercgheiosg"
         rec_uri = reverse("sumatra-record",
                           kwargs={"project": "TestProject",
                                   "label": label})

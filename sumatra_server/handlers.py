@@ -58,7 +58,7 @@ class AnonymousRecordHandler(AnonymousBaseHandler):
     @staticmethod
     def tags(obj):
         return parse_tag_input(obj.tags)
-    
+
     @classmethod
     def project_id(self, record):
         return record.project.id
@@ -84,18 +84,18 @@ class RecordHandler(BaseHandler):
               'stdout_stderr')
     template = "record_detail.html"
     anonymous = AnonymousRecordHandler
-    
+
     @staticmethod
     def tags(obj):
         return parse_tag_input(obj.tags)
-    
+
     def queryset(self, request): # this is already defined in more recent versions of Piston
         return self.model.objects.all()
-    
+
     @classmethod
     def project_id(self, record):
         return record.project.id
-    
+
     @check_permissions
     def read(self, request, project, label):
         filter = {'project': project, 'label': label}
@@ -103,7 +103,7 @@ class RecordHandler(BaseHandler):
             return self.queryset(request).get(**filter)
         except ObjectDoesNotExist:
             return rc.NOT_FOUND
-        
+
     @check_permissions
     def update(self, request, project, label):
         # this performs update if the record already exists, and create otherwise
@@ -181,16 +181,17 @@ class AnonymousProjectHandler(AnonymousBaseHandler):
                     'id': prj.id,
                     'name': prj.get_name(),
                     'description': prj.description,
-                    'records': [ "%s%s/" % (project_uri, rec.label)
+                    'records': ["%s%s/" % (project_uri, rec.label)
                                 for rec in records],
                     'tags': tags,
                 }
+
 
 class ProjectHandler(BaseHandler):
     allowed_methods = ('GET', 'PUT')
     template = "project_detail.html"
     anonymous = AnonymousProjectHandler
-    
+
     def read(self, request, project):
         try:
             prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
@@ -237,7 +238,7 @@ class ProjectHandler(BaseHandler):
 class PermissionListHandler(BaseHandler):
     allowed_methods = ('GET', 'POST',)
     template = "project_permissions.html"
-    
+
     def read(self, request, project):
         try:
             prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
@@ -262,7 +263,7 @@ class PermissionListHandler(BaseHandler):
 class ProjectListHandler(BaseHandler):
     allowed_methods = ('GET',)
     template = "project_list.html"
-    
+
     def read(self, request):
         if request.user.is_anonymous():
             user, _ = User.objects.get_or_create(username="anonymous")
@@ -270,36 +271,55 @@ class ProjectListHandler(BaseHandler):
         else:
             user = request.user
         protocol = request.is_secure() and "https" or "http"
-        return [ {
+        return [{
                     "id": prj.id,
                     "name": prj.get_name(),
                     "description": prj.description,
                     "uri": "%s://%s%s" % (protocol, request.get_host(), reverse("sumatra-project", args=[prj.id])),
                     "last_updated": prj.last_updated()
-                  }
-                  for prj in reversed(sorted(models.Project.objects.filter(projectpermission__user=user),
-                                             key=lambda prj: prj.last_updated()))]
+                }
+                for prj in reversed(sorted(models.Project.objects.filter(projectpermission__user=user),
+                                           key=lambda prj: prj.last_updated()))]
 
 
-# the following are currently defined only to suppress the 'id'
-# in the output
-
-class ExecutableHandler(AnonymousBaseHandler):
+class AnonymousExecutableHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.Executable
+    fields = ('name', 'options', 'path', 'version')
 
 
-class ParameterSetHandler(AnonymousBaseHandler):
+class ExecutableHandler(BaseHandler):
+    allowed_methods = []
+    model = models.Executable
+    fields = ('name', 'options', 'path', 'version')
+    anonymous = AnonymousExecutableHandler
+
+
+class AnonymousParameterSetHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.ParameterSet
 
 
-class RepositoryHandler(AnonymousBaseHandler):
+class ParameterSetHandler(BaseHandler):
+    allowed_methods = []
+    model = models.ParameterSet
+    anonymous = AnonymousParameterSetHandler
+
+
+class AnonymousRepositoryHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.Repository
+    field = ('type', 'url') #, 'upstream')
 
 
-class LaunchModeHandler(AnonymousBaseHandler):
+class RepositoryHandler(BaseHandler):
+    allowed_methods = []
+    model = models.Repository
+    field = ('type', 'url') #, 'upstream')
+    anonymous = AnonymousRepositoryHandler
+
+
+class AnonymousLaunchModeHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.LaunchMode
     fields = ('type', 'parameters')
@@ -311,10 +331,26 @@ class LaunchModeHandler(AnonymousBaseHandler):
             assert isinstance(value, dict)
         else:
             value = {}
-        return value 
-    
-    
-class DatastoreHandler(AnonymousBaseHandler):
+        return value
+
+
+class LaunchModeHandler(BaseHandler):
+    allowed_methods = []
+    model = models.LaunchMode
+    fields = ('type', 'parameters')
+    anonymous = AnonymousLaunchModeHandler
+
+    @staticmethod
+    def parameters(obj):
+        if obj.parameters:
+            value = eval(obj.parameters, {'__builtins__': []}, {})
+            assert isinstance(value, dict)
+        else:
+            value = {}
+        return value
+
+
+class AnonymousDatastoreHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.Datastore
     fields = ('type', 'parameters')
@@ -327,19 +363,51 @@ class DatastoreHandler(AnonymousBaseHandler):
         else:
             value = {}
         return value
-    
-    
-class PlatformHandler(AnonymousBaseHandler):
+
+
+class DatastoreHandler(BaseHandler):
+    allowed_methods = []
+    model = models.Datastore
+    fields = ('type', 'parameters')
+    anonymous = AnonymousDatastoreHandler
+
+    @staticmethod
+    def parameters(obj):
+        if obj.parameters:
+            value = eval(obj.parameters, {'__builtins__': []}, {})
+            assert isinstance(value, dict)
+        else:
+            value = {}
+        return value
+
+
+class AnonymousPlatformHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.PlatformInformation
+    fields = ('architecture_bits', 'architecture_linkage', 'ip_addr', 'machine', 'network_name',
+              'processor', 'release', 'system_name', 'version')
 
-    
-class DependencyHandler(AnonymousBaseHandler):
+
+class PlatformHandler(BaseHandler):
+    allowed_methods = []
+    model = models.PlatformInformation
+    fields = ('architecture_bits', 'architecture_linkage', 'ip_addr', 'machine', 'network_name',
+              'processor', 'release', 'system_name', 'version')
+    anonymous = AnonymousPlatformHandler
+
+
+class AnonymousDependencyHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.Dependency
 
 
-class DataKeyHandler(AnonymousBaseHandler):
+class DependencyHandler(BaseHandler):
+    allowed_methods = []
+    model = models.Dependency
+    anonymous = AnonymousDependencyHandler
+
+
+class AnonymousDataKeyHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.DataKey
     fields = ('path', 'digest', 'metadata')
@@ -351,6 +419,23 @@ class DataKeyHandler(AnonymousBaseHandler):
             assert isinstance(value, dict)
         else:
             value = {}
-        return value 
+        return value
+
+
+class DataKeyHandler(BaseHandler):
+    allowed_methods = []
+    model = models.DataKey
+    fields = ('path', 'digest', 'metadata')
+    anonymous = AnonymousDataKeyHandler
+
+    @staticmethod
+    def metadata(obj):
+        if obj.metadata:
+            value = eval(obj.metadata, {'__builtins__': []}, {})
+            assert isinstance(value, dict)
+        else:
+            value = {}
+        return value
+
 
 # note: if we start to look at the Accept header, should send 406 response if we can't send the requested mimetype (RFC 2616)
