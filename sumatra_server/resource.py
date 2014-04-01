@@ -3,9 +3,10 @@ from piston.emitters import Emitter
 
 available_emitters = dict(
     ((ct.split(";")[0], em)
-      for em, (_, ct) in Emitter.EMITTERS.iteritems())
+     for em, (_, ct) in Emitter.EMITTERS.iteritems())
 )
 print "AVAILABLE:", available_emitters
+
 
 def get_emitters_from_accept_header(request):
     if 'HTTP_ACCEPT' in request.META:
@@ -17,7 +18,7 @@ def get_emitters_from_accept_header(request):
     possible_emitters = []
     if accept:
         print "ACCEPT:", accept
-        accepted_contenttypes = (ct.split(";")[0] for ct in accept.split(",")) # need to handle wild-cards
+        accepted_contenttypes = (ct.split(";")[0] for ct in accept.split(","))  # need to handle wild-cards
         for ct in accepted_contenttypes:
             if ct in available_emitters:
                 possible_emitters.append(available_emitters[ct])
@@ -26,7 +27,7 @@ def get_emitters_from_accept_header(request):
 
 
 def determine_emitter(request, *args, **kwargs):
-    if "emitter_format" in kwargs:       
+    if "emitter_format" in kwargs:
         em = kwargs.pop('emitter_format', None)
     elif "format" in request.GET:
         em = request.GET['format']
@@ -36,6 +37,7 @@ def determine_emitter(request, *args, **kwargs):
     return em
 
 
-class Resource(piston.resource.Resource):    
+class Resource(piston.resource.Resource):
+
     def determine_emitter(self, request, *args, **kwargs):
         return determine_emitter(request, *args, **kwargs)

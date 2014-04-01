@@ -53,9 +53,6 @@ class BaseTestCase(TestCase):
 
 class ProjectListHandlerTest(BaseTestCase):
 
-    #def setUp(self):
-    #    self.client.login(username="testuser", password="abc123")
-
     def test_GET_no_data(self):
         prj_list_uri = reverse("sumatra-project-list")
         response = self.client.get(prj_list_uri, {}, **self.extra)
@@ -77,14 +74,11 @@ class ProjectListHandlerTest(BaseTestCase):
 
 class ProjectHandlerTest(BaseTestCase):
 
-    #def setUp(self):
-    #    self.client.login(username="testuser", password="abc123")
-
     def test_GET_no_data(self):
         prj_uri = reverse("sumatra-project",
                           kwargs={"project": "TestProject"})
         response = self.client.get(prj_uri, {}, **self.extra)
-        #print response.content
+        # print response.content
         self.assertEqual(response.status_code, OK)
         self.assertMimeType(response, "application/json")
         data = json.loads(response.content)
@@ -105,7 +99,7 @@ class RecordHandlerTest(BaseTestCase):
                           kwargs={"project": "TestProject",
                                   "label": label})
         response = self.client.get(rec_uri, {}, **self.extra)
-        #print response.content
+        # print response.content
         self.assertEqual(response.status_code, OK)
         self.assertMimeType(response, "application/json")
         data = json.loads(response.content)
@@ -124,7 +118,6 @@ class RecordHandlerTest(BaseTestCase):
         self.assertEqual(data["tags"], ["foobar"])
         self.assertEqual(data["output_data"][0]["path"], "example2.dat")
         self.assertIsInstance(data["output_data"][0]["metadata"], dict)
-
 
     def test_GET_format_html(self):
         self.extra = {}  # use Django auth, not HTTP Basic
@@ -175,7 +168,7 @@ class RecordHandlerTest(BaseTestCase):
                 "version": "iugnogn",
                 "name": "kljhnhn",
                 "options": "dfgdfg"
-             },
+            },
             "repository": {
                 "url": "iuhnhc;<s",
                 "type": "iufvbfgbjlml",
@@ -250,7 +243,7 @@ class RecordHandlerTest(BaseTestCase):
 
         response = self.client.get(rec_uri, {}, **self.extra)
         self.assertEqual(response.status_code, OK)
-        #pprint(deunicode(json.loads(response.content)))
+        # pprint(deunicode(json.loads(response.content)))
         new_record.update(project_id="TestProject")
         self.maxDiff = None
         #import pdb; pdb.set_trace()

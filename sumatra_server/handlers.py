@@ -28,12 +28,14 @@ def build_timestamp(**kwargs):
         D[key] = int(kwargs[key])
     return datetime.datetime(**D)
 
+
 def keys2str(D):
     """Keywords cannot be unicode."""
     E = {}
-    for k,v in D.items():
+    for k, v in D.items():
         E[str(k)] = v
     return E
+
 
 def check_permissions(func):
     def wrapper(self, request, project, *args, **kwargs):
@@ -89,7 +91,7 @@ class RecordHandler(BaseHandler):
     def tags(obj):
         return parse_tag_input(obj.tags)
 
-    def queryset(self, request): # this is already defined in more recent versions of Piston
+    def queryset(self, request):  # this is already defined in more recent versions of Piston
         return self.model.objects.all()
 
     @classmethod
@@ -150,15 +152,15 @@ class RecordHandler(BaseHandler):
                     getattr(inst, field.name).get_or_create(**keys2str(obj_attrs))
             inst.save()
             return rc.CREATED
-        except self.model.MultipleObjectsReturned: # this should never happen
+        except self.model.MultipleObjectsReturned:  # this should never happen
             return rc.DUPLICATE_ENTRY
 
     @check_permissions
     def delete(self, request, project, label):
         filter = {'project': project, 'label': label}
         response = BaseHandler.delete(self, request, **filter)
-        if response.status_code == 410: # Using 404 instead of 410 if resource doesn't exist
-            response = rc.NOT_FOUND # to me 'Gone' implies it used to exist, and we can't say that for sure
+        if response.status_code == 410:  # Using 404 instead of 410 if resource doesn't exist
+            response = rc.NOT_FOUND  # to me 'Gone' implies it used to exist, and we can't say that for sure
         return response
 
 
@@ -178,13 +180,13 @@ class AnonymousProjectHandler(AnonymousBaseHandler):
         protocol = request.is_secure() and "https" or "http"
         project_uri = "%s://%s%s" % (protocol, request.get_host(), reverse("sumatra-project", args=[prj.id]))
         return {
-                    'id': prj.id,
-                    'name': prj.get_name(),
-                    'description': prj.description,
-                    'records': ["%s%s/" % (project_uri, rec.label)
-                                for rec in records],
-                    'tags': tags,
-                }
+            'id': prj.id,
+            'name': prj.get_name(),
+            'description': prj.description,
+            'records': ["%s%s/" % (project_uri, rec.label)
+                        for rec in records],
+            'tags': tags,
+        }
 
 
 class ProjectHandler(BaseHandler):
@@ -204,14 +206,14 @@ class ProjectHandler(BaseHandler):
         protocol = request.is_secure() and "https" or "http"
         project_uri = "%s://%s%s" % (protocol, request.get_host(), reverse("sumatra-project", args=[prj.id]))
         return {
-                    'id': prj.id,
-                    'name': prj.get_name(),
-                    'description': prj.description,
-                    'records': [ "%s%s/" % (project_uri, rec.label)
-                                for rec in records],
-                    'access': [perm.user.username for perm in prj.projectpermission_set.all()],
-                    'tags': tags,
-                }
+            'id': prj.id,
+            'name': prj.get_name(),
+            'description': prj.description,
+            'records': ["%s%s/" % (project_uri, rec.label)
+                        for rec in records],
+            'access': [perm.user.username for perm in prj.projectpermission_set.all()],
+            'tags': tags,
+        }
 
     def update(self, request, project):
         """
@@ -245,10 +247,10 @@ class PermissionListHandler(BaseHandler):
         except models.Project.DoesNotExist:
             return rc.FORBIDDEN
         return {
-                    'id': prj.id,
-                    'name': prj.get_name(),
-                    'access': [perm.user for perm in prj.projectpermission_set.all()],
-                }
+            'id': prj.id,
+            'name': prj.get_name(),
+            'access': [perm.user for perm in prj.projectpermission_set.all()],
+        }
 
     @validate(PermissionsForm)
     def create(self, request, project):
@@ -272,14 +274,14 @@ class ProjectListHandler(BaseHandler):
             user = request.user
         protocol = request.is_secure() and "https" or "http"
         return [{
-                    "id": prj.id,
-                    "name": prj.get_name(),
-                    "description": prj.description,
-                    "uri": "%s://%s%s" % (protocol, request.get_host(), reverse("sumatra-project", args=[prj.id])),
-                    "last_updated": prj.last_updated()
-                }
-                for prj in reversed(sorted(models.Project.objects.filter(projectpermission__user=user),
-                                           key=lambda prj: prj.last_updated()))]
+            "id": prj.id,
+            "name": prj.get_name(),
+            "description": prj.description,
+            "uri": "%s://%s%s" % (protocol, request.get_host(), reverse("sumatra-project", args=[prj.id])),
+            "last_updated": prj.last_updated()
+        }
+            for prj in reversed(sorted(models.Project.objects.filter(projectpermission__user=user),
+                                       key=lambda prj: prj.last_updated()))]
 
 
 class AnonymousExecutableHandler(AnonymousBaseHandler):
@@ -309,13 +311,13 @@ class ParameterSetHandler(BaseHandler):
 class AnonymousRepositoryHandler(AnonymousBaseHandler):
     allowed_methods = []
     model = models.Repository
-    field = ('type', 'url') #, 'upstream')
+    field = ('type', 'url', 'upstream')
 
 
 class RepositoryHandler(BaseHandler):
     allowed_methods = []
     model = models.Repository
-    field = ('type', 'url') #, 'upstream')
+    field = ('type', 'url', 'upstream')
     anonymous = AnonymousRepositoryHandler
 
 
@@ -438,4 +440,5 @@ class DataKeyHandler(BaseHandler):
         return value
 
 
-# note: if we start to look at the Accept header, should send 406 response if we can't send the requested mimetype (RFC 2616)
+# note: if we start to look at the Accept header, should send 406 response
+# if we can't send the requested mimetype (RFC 2616)
