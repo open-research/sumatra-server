@@ -18,11 +18,37 @@
     }
   }, 
   {
+    "pk": 2, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "anonymous", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2013-07-10 13:46:59", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "", 
+      "email": "", 
+      "date_joined": "2013-07-10 13:46:59"
+    }
+  },
+  {
     "pk": 1, 
     "model": "sumatra_server.projectpermission", 
     "fields": {
       "project": "TestProject", 
       "user": 1
+    }
+  },
+  {
+    "pk": 2, 
+    "model": "sumatra_server.projectpermission", 
+    "fields": {
+      "project": "TestProject2", 
+      "user": 2
     }
   }
 ]

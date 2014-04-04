@@ -1,12 +1,15 @@
+"""
+
+"""
+
 from piston.handler import BaseHandler, AnonymousBaseHandler
 from piston.utils import rc, validate
 from sumatra.recordstore.django_store import models
 import datetime
 from django.core.urlresolvers import reverse
 from django.db.models import ForeignKey
-from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from forms import PermissionsForm
 from tagging.utils import parse_tag_input
@@ -39,7 +42,9 @@ def keys2str(D):
 
 def check_permissions(func):
     def wrapper(self, request, project, *args, **kwargs):
-        if request.user.projectpermission_set.filter(project__id=project).count():
+        if models.Project.objects.filter(id=project, projectpermission__user__username='anonymous').count():
+            return func(self, request, project, *args, **kwargs)
+        elif request.user.projectpermission_set.filter(project__id=project).count():
             return func(self, request, project, *args, **kwargs)
         else:
             return rc.FORBIDDEN
@@ -90,9 +95,6 @@ class RecordHandler(BaseHandler):
     @staticmethod
     def tags(obj):
         return parse_tag_input(obj.tags)
-
-    def queryset(self, request):  # this is already defined in more recent versions of Piston
-        return self.model.objects.all()
 
     @classmethod
     def project_id(self, record):
@@ -160,7 +162,7 @@ class RecordHandler(BaseHandler):
         filter = {'project': project, 'label': label}
         response = BaseHandler.delete(self, request, **filter)
         if response.status_code == 410:  # Using 404 instead of 410 if resource doesn't exist
-            response = rc.NOT_FOUND  # to me 'Gone' implies it used to exist, and we can't say that for sure
+            response = rc.NOT_FOUND      # to me 'Gone' implies it used to exist, and we can't say that for sure
         return response
 
 
@@ -195,8 +197,9 @@ class ProjectHandler(BaseHandler):
     anonymous = AnonymousProjectHandler
 
     def read(self, request, project):
+        anonymous, _ = User.objects.get_or_create(username="anonymous")
         try:
-            prj = models.Project.objects.get(id=project, projectpermission__user=request.user)
+            prj = models.Project.objects.get(id=project, projectpermission__user__in=(request.user, anonymous))
         except models.Project.DoesNotExist:
             return rc.FORBIDDEN
         records = prj.record_set.all()
@@ -262,25 +265,41 @@ class PermissionListHandler(BaseHandler):
         return HttpResponseRedirect(reverse("sumatra-project", args=[prj.id]))
 
 
-class ProjectListHandler(BaseHandler):
+class AnonymousProjectListHandler(AnonymousBaseHandler):
     allowed_methods = ('GET',)
     template = "project_list.html"
 
     def read(self, request):
-        if request.user.is_anonymous():
-            user, _ = User.objects.get_or_create(username="anonymous")
-            user.set_password("")
-        else:
-            user = request.user
         protocol = request.is_secure() and "https" or "http"
-        return [{
-            "id": prj.id,
-            "name": prj.get_name(),
-            "description": prj.description,
-            "uri": "%s://%s%s" % (protocol, request.get_host(), reverse("sumatra-project", args=[prj.id])),
-            "last_updated": prj.last_updated()
-        }
-            for prj in reversed(sorted(models.Project.objects.filter(projectpermission__user=user),
+        return [
+            {
+                "id": prj.id,
+                "name": prj.get_name(),
+                "description": prj.description,
+                "uri": "%s://%s%s" % (protocol, request.get_host(), reverse("sumatra-project", args=[prj.id])),
+                "last_updated": prj.last_updated()
+            }
+            for prj in reversed(sorted(models.Project.objects.filter(projectpermission__user__username="anonymous"),
+                                       key=lambda prj: prj.last_updated()))]
+
+
+class ProjectListHandler(BaseHandler):
+    allowed_methods = ('GET',)
+    template = "project_list.html"
+    anonymous = AnonymousProjectListHandler
+
+    def read(self, request):
+        anonymous, _ = User.objects.get_or_create(username="anonymous")
+        protocol = request.is_secure() and "https" or "http"
+        return [
+            {
+                "id": prj.id,
+                "name": prj.get_name(),
+                "description": prj.description,
+                "uri": "%s://%s%s" % (protocol, request.get_host(), reverse("sumatra-project", args=[prj.id])),
+                "last_updated": prj.last_updated()
+            }
+            for prj in reversed(sorted(models.Project.objects.filter(projectpermission__user__in=(request.user, anonymous)),
                                        key=lambda prj: prj.last_updated()))]
 
 

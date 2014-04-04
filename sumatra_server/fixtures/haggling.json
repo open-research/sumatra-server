@@ -3,8 +3,16 @@
     "pk": "TestProject", 
     "model": "django_store.project", 
     "fields": {
-      "name": "", 
-      "description": ""
+      "name": "Test Project #1", 
+      "description": "Private project"
+    }
+  },
+  {
+    "pk": "TestProject2", 
+    "model": "django_store.project", 
+    "fields": {
+      "name": "Test Project #2", 
+      "description": "Public project"
     }
   }, 
   {
@@ -217,7 +225,7 @@
         5, 
         3
       ], 
-      "user": "", 
+      "user": "testuser", 
       "output_data": [
         1
       ], 
@@ -257,7 +265,7 @@
         5, 
         3
       ], 
-      "user": "", 
+      "user": "testuser", 
       "output_data": [
         2
       ], 
@@ -297,7 +305,7 @@
         5, 
         3
       ], 
-      "user": "", 
+      "user": "testuser", 
       "output_data": [
         1
       ], 
@@ -337,7 +345,7 @@
         5, 
         3
       ], 
-      "user": "", 
+      "user": "testuser", 
       "output_data": [
         2
       ], 
@@ -346,6 +354,44 @@
       "launch_mode": 1, 
       "main_file": "main.py", 
       "outcome": "The new record exactly matches the original."
+    }
+  },
+    {
+    "pk": 6, 
+    "model": "django_store.record", 
+    "fields": {
+      "script_arguments": "<parameters>", 
+      "platforms": [
+        1
+      ], 
+      "duration": 0.149763, 
+      "diff": "", 
+      "datastore": 1, 
+      "input_datastore": 2, 
+      "executable": 1, 
+      "parameters": 3, 
+      "label": "20141013-172504", 
+      "version": "9164b57cd8dd", 
+      "stdout_stderr": "", 
+      "repository": 1, 
+      "tags": "", 
+      "timestamp": "2014-10-13 17:25:04", 
+      "reason": "", 
+      "dependencies": [
+        4, 
+        6,
+        5, 
+        3
+      ], 
+      "user": "testuser", 
+      "output_data": [
+        1
+      ], 
+      "project": "TestProject2", 
+      "input_data": [], 
+      "launch_mode": 1, 
+      "main_file": "main.py", 
+      "outcome": ""
     }
   }, 
   {

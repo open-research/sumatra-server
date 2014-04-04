@@ -53,16 +53,28 @@ class BaseTestCase(TestCase):
 
 class ProjectListHandlerTest(BaseTestCase):
 
-    def test_GET_no_data(self):
+    def test_GET_authenticated(self):
         prj_list_uri = reverse("sumatra-project-list")
         response = self.client.get(prj_list_uri, {}, **self.extra)
         self.failUnlessEqual(response.status_code, OK)
         self.assertMimeType(response, "application/json")
         data = json.loads(response.content)
         assert isinstance(data, list)
+        self.assertEqual(len(data), 2)
+        uris = {prj["uri"] for prj in data}
+        self.assertEqual(uris,
+                         {"http://testserver%sTestProject/" % prj_list_uri,
+                          "http://testserver%sTestProject2/" % prj_list_uri})
+
+    def test_GET_anonymous(self):
+        prj_list_uri = reverse("sumatra-project-list")
+        response = self.client.get(prj_list_uri, {})
+        self.failUnlessEqual(response.status_code, OK)
+        self.assertMimeType(response, "application/json")
+        data = json.loads(response.content)
         self.assertEqual(len(data), 1)
-        prj = data[0]
-        self.assertEqual(prj["uri"], "http://testserver%sTestProject/" % prj_list_uri)
+        self.assertEqual(data[0]["uri"],
+                         "http://testserver%sTestProject2/" % prj_list_uri)
 
     def test_GET_format_html(self):
         self.client.login(username="testuser", password="abc123")
@@ -74,7 +86,7 @@ class ProjectListHandlerTest(BaseTestCase):
 
 class ProjectHandlerTest(BaseTestCase):
 
-    def test_GET_no_data(self):
+    def test_GET_private_authenticated(self):
         prj_uri = reverse("sumatra-project",
                           kwargs={"project": "TestProject"})
         response = self.client.get(prj_uri, {}, **self.extra)
@@ -85,10 +97,51 @@ class ProjectHandlerTest(BaseTestCase):
         assert isinstance(data, dict)
         self.assertEqual(data["id"], "TestProject")
         assert "testuser" in data["access"]
+        assert "anonymous" not in data["access"]
         assert isinstance(data["records"], list)
+        # check we can also access all the records contained in this project
         for record in data["records"]:
             touch = self.client.get(record, {}, **self.extra)  # should perhaps add support for HEAD to the server
             self.assertEqual(touch.status_code, OK)
+
+    def test_GET_public_authenticated(self):
+        prj_uri = reverse("sumatra-project",
+                          kwargs={"project": "TestProject2"})
+        response = self.client.get(prj_uri, {}, **self.extra)
+        self.assertEqual(response.status_code, OK)
+        self.assertMimeType(response, "application/json")
+        data = json.loads(response.content)
+        self.assertEqual(data["id"], "TestProject2")
+        assert "anonymous" in data["access"]
+        # check we can also access all the records contained in this project
+        for record in data["records"]:
+            touch = self.client.get(record, {}, **self.extra)
+            self.assertEqual(touch.status_code, OK)
+
+    def test_GET_public_anonymous(self):
+        prj_uri = reverse("sumatra-project",
+                          kwargs={"project": "TestProject2"})
+        response = self.client.get(prj_uri, {})
+        self.assertEqual(response.status_code, OK)
+        data = json.loads(response.content)
+        self.assertEqual(data["id"], "TestProject2")
+        assert "access" not in data
+        # check we can also access all the records contained in this project
+        for record in data["records"]:
+            touch = self.client.get(record, {})
+            self.assertEqual(touch.status_code, OK)
+
+    def test_GET_private_anonymous(self):
+        prj_uri = reverse("sumatra-project",
+                          kwargs={"project": "TestProject"})
+        response = self.client.get(prj_uri, {})
+        self.assertEqual(response.status_code, UNAUTHORIZED)
+
+    def test_GET_nonexistent(self):
+        prj_uri = reverse("sumatra-project",
+                          kwargs={"project": "TestProject999"})
+        response = self.client.get(prj_uri, {})
+        self.assertEqual(response.status_code, UNAUTHORIZED)
 
 
 class RecordHandlerTest(BaseTestCase):
@@ -209,7 +262,7 @@ class RecordHandlerTest(BaseTestCase):
                 "digest": "0123456789abcdef",
                 "metadata": {}
             }],
-            "timestamp": "2010-07-11 22:50:00",
+            "timestamp": "2010-07-11T22:50:00",
             "tags": ["abcd", "efgh", "ijklm", "tag with spaces"],
             "diff": "+++---",
             "user": "gnugynygy",
