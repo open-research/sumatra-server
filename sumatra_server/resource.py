@@ -23,6 +23,7 @@ def get_emitters_from_accept_header(request):
             if ct in available_emitters:
                 possible_emitters.append(available_emitters[ct])
         print "POSSIBLE:", possible_emitters
+        print "SESSION: ", request.session.session_key
     return possible_emitters
 
 

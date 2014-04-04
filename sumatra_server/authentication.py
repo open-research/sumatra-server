@@ -45,11 +45,15 @@ class AuthenticationDispatcher(object):
         self.default_authenticator = default
 
     def is_authenticated(self, request):
-        em = determine_emitter(request)
-        if em in self.authenticator_map:
-            self.current_authenticator = self.authenticator_map[em]
+        session = request.session.session_key
+        if session:
+            self.current_authenticator = DjangoAuthentication()
         else:
-            self.current_authenticator = self.default_authenticator
+            em = determine_emitter(request)
+            if em in self.authenticator_map:
+                self.current_authenticator = self.authenticator_map[em]
+            else:
+                self.current_authenticator = self.default_authenticator
         return self.current_authenticator.is_authenticated(request)
 
     def challenge(self):
