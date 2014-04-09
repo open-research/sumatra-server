@@ -6,7 +6,7 @@ from django.test.client import Client
 try:
     import json
 except ImportError:
-    import simplejson as json
+    import django.utils.simplejson as json
 import base64
 
 
