@@ -1,6 +1,11 @@
+"""
+Sumatra Server
+
+:copyright: Copyright 2010-2014 Andrew Davison
+:license: CeCILL, see COPYING for details.
+"""
+
 from django import template
-#from django.template.defaultfilters import stringfilter
-#from django.utils.safestring import mark_safe
 from sumatra_server.forms import PermissionsForm
 
 register = template.Library()

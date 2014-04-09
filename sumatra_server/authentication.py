@@ -2,6 +2,10 @@
 Authentication handler for using django.contrib.auth
 
 Based on http://yml-blog.blogspot.com/2009/10/django-piston-authentication-against.html
+
+
+:copyright: Copyright 2010-2014 Andrew Davison
+:license: CeCILL, see COPYING for details.
 """
 
 from django.conf import settings

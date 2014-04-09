@@ -1,3 +1,10 @@
+"""
+Sumatra Server
+
+:copyright: Copyright 2010-2014 Andrew Davison
+:license: CeCILL, see COPYING for details.
+"""
+
 from django.db import models
 from django.contrib.auth.models import User
 from sumatra.recordstore.django_store.models import Project

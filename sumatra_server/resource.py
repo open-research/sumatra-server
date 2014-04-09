@@ -1,5 +1,8 @@
 """
+Sumatra Server
 
+:copyright: Copyright 2010-2014 Andrew Davison
+:license: CeCILL, see COPYING for details.
 """
 
 import logging
