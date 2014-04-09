@@ -1,11 +1,18 @@
+"""
+
+"""
+
+import logging
 import piston.resource
 from piston.emitters import Emitter
+
+logger = logging.getLogger("sumatra_server")
 
 available_emitters = dict(
     ((ct.split(";")[0], em)
      for em, (_, ct) in Emitter.EMITTERS.iteritems())
 )
-print "AVAILABLE:", available_emitters
+logger.debug("AVAILABLE:", available_emitters)
 
 
 def get_emitters_from_accept_header(request):
@@ -17,13 +24,13 @@ def get_emitters_from_accept_header(request):
         accept = ""
     possible_emitters = []
     if accept:
-        print "ACCEPT:", accept
+        logger.debug("ACCEPT:", accept)
         accepted_contenttypes = (ct.split(";")[0] for ct in accept.split(","))  # need to handle wild-cards
         for ct in accepted_contenttypes:
             if ct in available_emitters:
                 possible_emitters.append(available_emitters[ct])
-        print "POSSIBLE:", possible_emitters
-        print "SESSION: ", request.session.session_key
+        logger.debug("POSSIBLE:", possible_emitters)
+        logger.debug("SESSION: ", request.session.session_key)
     return possible_emitters
 
 

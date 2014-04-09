@@ -2,7 +2,7 @@
 
 """
 
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url
 from piston.authentication import HttpBasicAuthentication
 from sumatra_server.authentication import DjangoAuthentication, AuthenticationDispatcher
 from sumatra_server.handlers import RecordHandler, ProjectHandler, ProjectListHandler, PermissionListHandler
@@ -15,7 +15,6 @@ record_resource = Resource(RecordHandler, authentication=auth)
 project_resource = Resource(ProjectHandler, authentication=auth)
 projectlist_resource = Resource(ProjectListHandler, authentication=auth)
 permissionlist_resource = Resource(PermissionListHandler, authentication=auth)
-print "AUTH:", project_resource.authentication
 
 urlpatterns = patterns('',
     url(r'^$', projectlist_resource, name="sumatra-project-list"),

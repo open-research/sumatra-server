@@ -93,7 +93,6 @@ class ProjectHandlerTest(BaseTestCase):
         prj_uri = reverse("sumatra-project",
                           kwargs={"project": "TestProject"})
         response = self.client.get(prj_uri, {}, **self.extra)
-        # print response.content
         self.assertEqual(response.status_code, OK)
         self.assertMimeType(response, "application/json")
         data = json.loads(response.content)
@@ -155,7 +154,6 @@ class RecordHandlerTest(BaseTestCase):
                           kwargs={"project": "TestProject",
                                   "label": label})
         response = self.client.get(rec_uri, {}, **self.extra)
-        # print response.content
         self.assertEqual(response.status_code, OK)
         self.assertMimeType(response, "application/json")
         data = json.loads(response.content)
@@ -192,7 +190,6 @@ class RecordHandlerTest(BaseTestCase):
                           kwargs={"project": "TestProject",
                                   "label": label})
         response = self.client.get(rec_uri, {})
-        print response.content
         self.assertEqual(response.status_code, UNAUTHORIZED)
 
     def test_GET_nonexistent_record(self):
@@ -295,7 +292,6 @@ class RecordHandlerTest(BaseTestCase):
         rec_uri = "%s%s/" % (prj_uri, new_record["label"])
         response = self.client.put(rec_uri, data=json.dumps(new_record),
                                    content_type="application/json", **self.extra)
-        print response.content
         self.assertEqual(response.status_code, CREATED)
 
         response = self.client.get(rec_uri, {}, **self.extra)
@@ -318,7 +314,6 @@ class RecordHandlerTest(BaseTestCase):
         }
         response = self.client.put(rec_uri, data=json.dumps(update),
                                    content_type="application/json", **self.extra)
-        print response.content
         self.assertEqual(response.status_code, OK)
 
         response = self.client.get(rec_uri, {}, **self.extra)

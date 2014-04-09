@@ -6,6 +6,7 @@ from piston.handler import BaseHandler, AnonymousBaseHandler
 from piston.utils import rc, validate
 from sumatra.recordstore.django_store import models
 import datetime
+import logging
 from django.core.urlresolvers import reverse
 from django.db.models import ForeignKey
 from django.core.exceptions import ObjectDoesNotExist
@@ -23,6 +24,8 @@ as a collection and add a subordinate. Piston says use POST to an element URI
 to create a new resource. The Wikipedia approach seems more logical to me, so I'm
 using it.
 """
+
+logger = logging.getLogger("sumatra_server")
 
 
 def build_timestamp(**kwargs):
@@ -112,10 +115,9 @@ class RecordHandler(BaseHandler):
     def update(self, request, project, label):
         # this performs update if the record already exists, and create otherwise
         filter = {'project': project, 'label': label}
-        print "PUT -->", request.PUT
-        print "Data -->", request.data
+        logger.debug("PUT -->", request.PUT)
+        logger.debug("Data -->", request.data)
         attrs = self.flatten_dict(request.data)
-        #print attrs
         try:
             # need to check consistency between URL project, group, timestamp
             # and the same information in request.data
@@ -141,7 +143,6 @@ class RecordHandler(BaseHandler):
                 if isinstance(field, ForeignKey):
                     fk_model = field.rel.to
                     obj_attrs = keys2str(attrs[field.name])
-                    ##print field.name, fk_model, obj_attrs
                     fk_inst, created = fk_model.objects.get_or_create(**obj_attrs)
                     setattr(inst, field.name, fk_inst)
                 else:
