@@ -3,7 +3,7 @@ from distutils.core import setup
 
 setup(
     name = "sumatra-server",
-    version = "0.2dev",
+    version = "0.2.0",
     url = 'http://bitbucket.org/apdavison/sumatra_server/',
     download_url = 'https://bitbucket.org/apdavison/sumatra_server/downloads',
     license = "CeCILL v2 http://www.cecill.info",
