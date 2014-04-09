@@ -29,14 +29,14 @@ class SumatraProjectListJSONEmitter(JSONEmitter):
     pass
 
 
-Emitter.register('record-v1+json', SumatraRecordJSONEmitter, 'application/vnd.sumatra.record-v1+json; charset=utf-8')
-Emitter.register('project-v1+json', SumatraRecordJSONEmitter, 'application/vnd.sumatra.project-v1+json; charset=utf-8')
-Emitter.register('project-list-v1+json', SumatraRecordJSONEmitter,
-                 'application/vnd.sumatra.project-list-v1+json; charset=utf-8')
+Emitter.register('record-v2+json', SumatraRecordJSONEmitter, 'application/vnd.sumatra.record-v2+json; charset=utf-8')
+Emitter.register('project-v2+json', SumatraRecordJSONEmitter, 'application/vnd.sumatra.project-v2+json; charset=utf-8')
+Emitter.register('project-list-v2+json', SumatraRecordJSONEmitter,
+                 'application/vnd.sumatra.project-list-v2+json; charset=utf-8')
 
-Mimer.register(simplejson.loads, ('application/vnd.sumatra.record-v1+json',
-                                  'application/vnd.sumatra.project-v1+json',
-                                  'application/vnd.sumatra.project-list-v1+json',
+Mimer.register(simplejson.loads, ('application/vnd.sumatra.record-v2+json',
+                                  'application/vnd.sumatra.project-v2+json',
+                                  'application/vnd.sumatra.project-list-2+json',
                                   'application/json'))
 
 # really need to tie emitter to handler or resource, as these are resource-specific media types, but for now we
