@@ -59,7 +59,7 @@ class AnonymousRecordHandler(AnonymousBaseHandler):
               'dependencies', 'parameters', 'launch_mode', 'datastore',
               'output_data', 'platforms', 'tags', 'user', 'project_id',
               'script_arguments', 'input_datastore', 'input_data',
-              'stdout_stderr')
+              'stdout_stderr', 'repeats')
     template = "record_detail.html"
 
     @staticmethod
@@ -88,7 +88,7 @@ class RecordHandler(BaseHandler):
               'dependencies', 'parameters', 'launch_mode', 'datastore',
               'output_data', 'platforms', 'tags', 'user', 'project_id',
               'script_arguments', 'input_datastore', 'input_data',
-              'stdout_stderr')
+              'stdout_stderr', 'repeats')
     template = "record_detail.html"
     anonymous = AnonymousRecordHandler
 

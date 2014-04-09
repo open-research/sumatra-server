@@ -1,3 +1,6 @@
+"""
+
+"""
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
@@ -166,7 +169,7 @@ class RecordHandlerTest(BaseTestCase):
                               "output_data", "timestamp", "tags", "diff",
                               "user", "dependencies", "platforms",
                               "project_id", "input_data", "input_datastore",
-                              "script_arguments", "stdout_stderr")))
+                              "script_arguments", "stdout_stderr", "repeats")))
         #import pdb; pdb.set_trace()
         self.assertEqual(data["tags"], ["foobar"])
         self.assertEqual(data["output_data"][0]["path"], "example2.dat")
@@ -285,6 +288,7 @@ class RecordHandlerTest(BaseTestCase):
                 "network_name": "ouifbf67",
                 "processor": "iugonuyginugugu"
             }],
+            "repeats": None
         }
         prj_uri = reverse("sumatra-project",
                           kwargs={"project": "TestProject"})

@@ -1,3 +1,7 @@
+"""
+
+"""
+
 from django.conf.urls.defaults import *
 from piston.authentication import HttpBasicAuthentication
 from sumatra_server.authentication import DjangoAuthentication, AuthenticationDispatcher

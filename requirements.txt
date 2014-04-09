@@ -1,5 +1,5 @@
 Django==1.5.5
-Sumatra==0.5.2
+Sumatra==0.6.0
 django-registration==1.0
 django-tagging==0.3.1
 docutils==0.11

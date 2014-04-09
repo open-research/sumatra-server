@@ -1,3 +1,7 @@
+"""
+
+"""
+
 from piston.emitters import Emitter, JSONEmitter
 from piston.utils import Mimer
 from django.template import RequestContext
@@ -29,14 +33,14 @@ class SumatraProjectListJSONEmitter(JSONEmitter):
     pass
 
 
-Emitter.register('record-v2+json', SumatraRecordJSONEmitter, 'application/vnd.sumatra.record-v2+json; charset=utf-8')
-Emitter.register('project-v2+json', SumatraRecordJSONEmitter, 'application/vnd.sumatra.project-v2+json; charset=utf-8')
-Emitter.register('project-list-v2+json', SumatraRecordJSONEmitter,
-                 'application/vnd.sumatra.project-list-v2+json; charset=utf-8')
+Emitter.register('record-v3+json', SumatraRecordJSONEmitter, 'application/vnd.sumatra.record-v3+json; charset=utf-8')
+Emitter.register('project-v3+json', SumatraRecordJSONEmitter, 'application/vnd.sumatra.project-v3+json; charset=utf-8')
+Emitter.register('project-list-v3+json', SumatraRecordJSONEmitter,
+                 'application/vnd.sumatra.project-list-v3+json; charset=utf-8')
 
-Mimer.register(simplejson.loads, ('application/vnd.sumatra.record-v2+json',
-                                  'application/vnd.sumatra.project-v2+json',
-                                  'application/vnd.sumatra.project-list-2+json',
+Mimer.register(simplejson.loads, ('application/vnd.sumatra.record-v3+json',
+                                  'application/vnd.sumatra.project-v3+json',
+                                  'application/vnd.sumatra.project-list-3+json',
                                   'application/json'))
 
 # really need to tie emitter to handler or resource, as these are resource-specific media types, but for now we
