@@ -9,7 +9,7 @@ import datetime
 from django.core.urlresolvers import reverse
 from django.db.models import ForeignKey
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
 from forms import PermissionsForm
 from tagging.utils import parse_tag_input
@@ -172,9 +172,15 @@ class AnonymousProjectHandler(AnonymousBaseHandler):
 
     def read(self, request, project):
         try:
+            prj = models.Project.objects.get(id=project)
+        except models.Project.DoesNotExist:
+            return rc.NOT_FOUND
+        try:
             prj = models.Project.objects.get(id=project, projectpermission__user__username='anonymous')
         except models.Project.DoesNotExist:
-            return rc.FORBIDDEN
+            resp = HttpResponse("Authorization Required", content_type='text/plain', status=401)
+            resp['WWW-Authenticate'] = 'Basic realm="%s"' % "Sumatra Server API"
+            return resp
         records = prj.record_set.all()
         tags = request.GET.get("tags", None)
         if tags:

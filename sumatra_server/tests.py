@@ -141,7 +141,7 @@ class ProjectHandlerTest(BaseTestCase):
         prj_uri = reverse("sumatra-project",
                           kwargs={"project": "TestProject999"})
         response = self.client.get(prj_uri, {})
-        self.assertEqual(response.status_code, UNAUTHORIZED)
+        self.assertEqual(response.status_code, NOT_FOUND)
 
 
 class RecordHandlerTest(BaseTestCase):
