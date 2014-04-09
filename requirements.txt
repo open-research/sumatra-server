@@ -1,9 +1,8 @@
-Django==1.3.7
+Django==1.5.5
 Sumatra==0.5.2
 django-piston==0.2.3
-django-registration==0.7
+django-registration==1.0
 django-tagging==0.3.1
 docutils==0.11
 httplib2==0.8
 parameters==0.2.1
-simplejson==3.3.3
