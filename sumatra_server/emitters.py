@@ -9,7 +9,10 @@ from piston.emitters import Emitter, JSONEmitter
 from piston.utils import Mimer
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from django.utils import simplejson
+try:
+    import json
+except ImportError:
+    import django.utils.simplejson as json
 
 
 class HTMLEmitter(Emitter):
@@ -41,10 +44,10 @@ Emitter.register('project-v3+json', SumatraRecordJSONEmitter, 'application/vnd.s
 Emitter.register('project-list-v3+json', SumatraRecordJSONEmitter,
                  'application/vnd.sumatra.project-list-v3+json; charset=utf-8')
 
-Mimer.register(simplejson.loads, ('application/vnd.sumatra.record-v3+json',
-                                  'application/vnd.sumatra.project-v3+json',
-                                  'application/vnd.sumatra.project-list-3+json',
-                                  'application/json'))
+Mimer.register(json.loads, ('application/vnd.sumatra.record-v3+json',
+                            'application/vnd.sumatra.project-v3+json',
+                            'application/vnd.sumatra.project-list-3+json',
+                            'application/json'))
 
 # really need to tie emitter to handler or resource, as these are resource-specific media types, but for now we
 # just accept everything
