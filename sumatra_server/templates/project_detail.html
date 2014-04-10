@@ -5,7 +5,9 @@
 
 {% block in_projects %} class="active"{% endblock %}
 
-{% block header %}{{data.name}} <a class="edit btn btn-small" href="#" data-toggle="modal" data-target="#edit_description"><i class="icon-pencil"></i></a>&nbsp;{% endblock %}
+{% block header %}{{data.name}}
+{% if user.username in data.access %}<a class="edit btn btn-small" href="#" data-toggle="modal" data-target="#edit_description"><i class="icon-pencil"></i></a>&nbsp;{% endif %}
+{% endblock %}
 
 {% block content %}
 <p>{{data.description|restructuredtext}}</p>
@@ -33,6 +35,7 @@
     </thead>
 </table>
 
+{% if user.username in data.access %}
 <div id="edit_description" class="modal hide">
   <form class="edit-form" method="PUT" action=".">
   <div class="modal-header">
@@ -48,6 +51,7 @@
   </div>
   </form>
 </div>
+{% endif %}
 
 
 {% endblock %}
