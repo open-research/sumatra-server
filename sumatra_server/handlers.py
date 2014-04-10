@@ -77,8 +77,16 @@ class AnonymousRecordHandler(AnonymousBaseHandler):
         return record.project.id
 
     def read(self, request, project, label):
-        if not models.Project.objects.filter(id=project, projectpermission__user__username='anonymous').count():
-            return rc.FORBIDDEN
+        try:
+            prj = models.Project.objects.get(id=project)
+        except models.Project.DoesNotExist:
+            return rc.NOT_FOUND
+        try:
+            prj = models.Project.objects.get(id=project, projectpermission__user__username='anonymous')
+        except models.Project.DoesNotExist:
+            resp = HttpResponse("Authorization Required", content_type='text/plain', status=401)
+            resp['WWW-Authenticate'] = 'Basic realm="%s"' % "Sumatra Server API"
+            return resp
         filter = {'project': project, 'label': label}
         try:
             return self.queryset(request).get(**filter)
