@@ -6,7 +6,7 @@
 {% block in_projects %} class="active"{% endblock %}
 
 {% block header %}{{data.name}}
-{% if user.username in data.access %}<a class="edit btn btn-small" href="#" data-toggle="modal" data-target="#edit_description"><i class="icon-pencil"></i></a>&nbsp;{% endif %}
+{% if user.username in data.access %}<button class="btn btn-small btn-default" data-toggle="modal" data-target="#edit_description"><span class="glyphicon glyphicon-pencil"></span></button>&nbsp;{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -36,20 +36,30 @@
 </table>
 
 {% if user.username in data.access %}
-<div id="edit_description" class="modal hide">
-  <form class="edit-form" method="PUT" action=".">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3>Editing Project</h3>
+<div id="edit_description" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="edt_descriptiontitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="PUT" action="." class="edit-form">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="edt_descriptiontitle">Editing Project</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="prj-name" name="name" value="{{ data.name }}" class="form-control">
+          </div>
+          <div>
+            <label>Description</label>
+            <textarea class="form-control" rows="8" id="prj-descr" name="description">{{data.description}}</textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="save-btn btn btn-primary">Save changes</button>
+        </div>
+      </form>
+    </div>
   </div>
-  <div class="modal-body">
-    <label>Name</label><input type="text" id="prj-name" name="name" value="{{data.name}}" class="input-block-level">
-    <label>Description</label><textarea rows="8" id="prj-descr" name="description" class="input-block-level">{{data.description}}</textarea>
-  </div>
-  <div class="modal-footer">
-    <button class="save-btn btn btn-primary">Save changes</button>
-  </div>
-  </form>
 </div>
 {% endif %}
 
@@ -57,5 +67,6 @@
 {% endblock %}
 
 {% block scripts %}
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
     <script type="text/javascript" src="/static/js/smtserve.js"></script>
 {% endblock %}
