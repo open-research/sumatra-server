@@ -217,7 +217,7 @@ class ProjectHandler(BaseHandler):
     def read(self, request, project):
         anonymous, _ = User.objects.get_or_create(username="anonymous")
         try:
-            prj = models.Project.objects.get(id=project, projectpermission__user__in=(request.user, anonymous))
+            prj = models.Project.objects.filter(id=project, projectpermission__user__in=(request.user, anonymous)).distinct()[0]
         except models.Project.DoesNotExist:
             return rc.FORBIDDEN
         records = prj.record_set.all()
@@ -317,7 +317,7 @@ class ProjectListHandler(BaseHandler):
                 "uri": "%s://%s%s" % (protocol, request.get_host(), reverse("sumatra-project", args=[prj.id])),
                 "last_updated": prj.last_updated()
             }
-            for prj in reversed(sorted(models.Project.objects.filter(projectpermission__user__in=(request.user, anonymous)),
+            for prj in reversed(sorted(models.Project.objects.filter(projectpermission__user__in=(request.user, anonymous)).distinct(),
                                        key=lambda prj: prj.last_updated()))]
 
 
