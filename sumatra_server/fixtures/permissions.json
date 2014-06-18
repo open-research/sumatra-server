@@ -50,5 +50,13 @@
       "project": "TestProject2", 
       "user": 2
     }
+  },
+  {
+    "pk": 3, 
+    "model": "sumatra_server.projectpermission", 
+    "fields": {
+      "project": "TestProject2", 
+      "user": 1
+    }
   }
 ]
