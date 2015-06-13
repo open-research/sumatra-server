@@ -4,14 +4,45 @@ Authentication handler for using django.contrib.auth
 Based on http://yml-blog.blogspot.com/2009/10/django-piston-authentication-against.html
 
 
-:copyright: Copyright 2010-2014 Andrew Davison
+:copyright: Copyright 2010-2015 Andrew Davison
 :license: CeCILL, see COPYING for details.
 """
 
+import binascii
 from django.conf import settings
+from django.http import HttpResponse
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import AnonymousUser
 from django.utils.http import urlquote
 from django.http import HttpResponseRedirect
-from sumatra_server.resource import determine_emitter
+
+
+class HttpBasicAuthentication(object):
+    # based on the Django Piston package
+
+    def is_authenticated(self, request):
+        auth_string = request.META.get('HTTP_AUTHORIZATION', None)
+        if not auth_string:
+            return False
+        try:
+            (authmeth, auth) = auth_string.split(" ", 1)
+            if not authmeth.lower() == 'basic':
+                return False
+            auth = auth.strip().decode('base64')
+            (username, password) = auth.split(':', 1)
+        except (ValueError, binascii.Error):
+            return False
+        request.user = authenticate(username=username, password=password) or AnonymousUser()
+        return request.user not in (False, None, AnonymousUser())
+
+    def challenge(self):
+        resp = HttpResponse("Authorization Required")
+        resp['WWW-Authenticate'] = 'Basic realm="Sumatra Server API"'
+        resp.status_code = 401
+        return resp
+
+    def __repr__(self):
+        return u'<HTTPBasic: realm=Sumatra Server API>'
 
 
 class DjangoAuthentication(object):
@@ -40,24 +71,12 @@ class DjangoAuthentication(object):
 
 class AuthenticationDispatcher(object):
 
-    def __init__(self, authenticator_map, default):
-        """
-        authenticator_map should be something like:
-        { "html": "DjangoAuthentication" }
-        """
-        self.authenticator_map = authenticator_map
-        self.default_authenticator = default
-
     def is_authenticated(self, request):
         session = request.session.session_key
         if session:
             self.current_authenticator = DjangoAuthentication()
         else:
-            em = determine_emitter(request)
-            if em in self.authenticator_map:
-                self.current_authenticator = self.authenticator_map[em]
-            else:
-                self.current_authenticator = self.default_authenticator
+            self.current_authenticator = HttpBasicAuthentication()
         return self.current_authenticator.is_authenticated(request)
 
     def challenge(self):

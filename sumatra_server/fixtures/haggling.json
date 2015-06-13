@@ -169,7 +169,9 @@
     "fields": {
       "path": "example2.dat", 
       "digest": "43a47cb379df2a7008fdeb38c6172278d000fdc4", 
-      "metadata": "{'mimetype': None, 'size': 2500, 'encoding': None}"
+      "metadata": "{'mimetype': None, 'size': 2500, 'encoding': None}",
+      "creation": null,
+      "output_from_record": 3
     }
   }, 
   {
@@ -178,7 +180,9 @@
     "fields": {
       "path": "example2.dat", 
       "digest": "9b8efe4161e4f78aa41a3ab7195db3d5709ba8b8", 
-      "metadata": "{'mimetype': None, 'size': 1276, 'encoding': None}"
+      "metadata": "{'mimetype': None, 'size': 1276, 'encoding': None}",
+      "creation": null,
+      "output_from_record": 3
     }
   }, 
   {
@@ -226,10 +230,7 @@
         3
       ], 
       "user": "testuser", 
-      "output_data": [
-        1
-      ], 
-      "project": "TestProject", 
+      "project": "TestProject",
       "input_data": [], 
       "launch_mode": 1, 
       "main_file": "main.py", 
@@ -266,10 +267,7 @@
         3
       ], 
       "user": "testuser", 
-      "output_data": [
-        2
-      ], 
-      "project": "TestProject", 
+      "project": "TestProject",
       "input_data": [], 
       "launch_mode": 1, 
       "main_file": "main.py", 
@@ -306,10 +304,7 @@
         3
       ], 
       "user": "testuser", 
-      "output_data": [
-        1
-      ], 
-      "project": "TestProject", 
+      "project": "TestProject",
       "input_data": [], 
       "launch_mode": 1, 
       "main_file": "main.py", 
@@ -346,10 +341,7 @@
         3
       ], 
       "user": "testuser", 
-      "output_data": [
-        2
-      ], 
-      "project": "TestProject", 
+      "project": "TestProject",
       "input_data": [], 
       "launch_mode": 1, 
       "main_file": "main.py", 
@@ -384,10 +376,7 @@
         3
       ], 
       "user": "testuser", 
-      "output_data": [
-        1
-      ], 
-      "project": "TestProject2", 
+      "project": "TestProject2",
       "input_data": [], 
       "launch_mode": 1, 
       "main_file": "main.py", 
@@ -414,7 +403,7 @@
     "fields": {
       "tag": 1, 
       "object_id": 3, 
-      "content_type": 10
+      "content_type": 18
     }
   }
 ]

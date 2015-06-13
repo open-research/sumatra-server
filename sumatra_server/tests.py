@@ -78,6 +78,7 @@ class ProjectListHandlerTest(BaseTestCase):
         self.failUnlessEqual(response.status_code, OK)
         self.assertMimeType(response, "application/json")
         data = json.loads(response.content)
+
         self.assertEqual(len(data), 1)
         self.assertEqual(data[0]["uri"],
                          "http://testserver%sTestProject2/" % prj_list_uri)
@@ -130,7 +131,7 @@ class ProjectHandlerTest(BaseTestCase):
         self.assertEqual(response.status_code, OK)
         data = json.loads(response.content)
         self.assertEqual(data["id"], "TestProject2")
-        assert "access" not in data
+        assert "access" not in data, str(data)
         # check we can also access all the records contained in this project
         for record in data["records"]:
             touch = self.client.get(record, {})
@@ -162,6 +163,8 @@ class RecordHandlerTest(BaseTestCase):
         data = json.loads(response.content)
         assert isinstance(data, dict)
         self.assertEqual(data["label"], label)
+        from django.contrib.contenttypes.models import ContentType
+        self.assertEqual(ContentType.objects.filter(model='record')[0].pk, 18)
         self.assertEqual(set(data.keys()),
                          set(("executable", "label", "reason",
                               "duration", "executable", "repository",
@@ -227,33 +230,35 @@ class RecordHandlerTest(BaseTestCase):
             },
             "repository": {
                 "url": "iuhnhc;<s",
-                "type": "iufvbfgbjlml",
+                "type": "GitRepository",
                 "upstream": None
             },
             "main_file": "OIYUGUIYFU",
             "version": "LUGNYGNYGu",
             "parameters": {
-                "content": "oignuguygnug",
-                "type": "hjgjgn65878",
+                "content": '{\n    "oignuguygnug": 3\n}',
+                "type": "JSONParameterSet",
             },
             "input_data": [{
+                "creation": None,
                 "path": "sfgshaeth",
                 "digest": "abcdef0123456789",
                 "metadata": {}
             }],
             "script_arguments": "p8yupyrprutot",
             "launch_mode": {
-                "type": "OIUNIU6nkjgbun",
-                "parameters": {},
+                "type": "SerialLaunchMode",
+                "parameters": {'options': None,
+                               'working_directory': '/path/to/wd'},
             },
             "datastore": {
-                "type": "mosigcqpoejf;",
+                "type": "FileSystemDataStore",
                 "parameters": {
                     "root": "/path/to/output/data"
                 }
             },
             "input_datastore": {
-                "type": "mosigcqpoejf;",
+                "type": "FileSystemDataStore",
                 "parameters": {
                     "root": "/path/to/input/data"
                 },
@@ -261,11 +266,12 @@ class RecordHandlerTest(BaseTestCase):
             "outcome": "mihiuhpoip",
             "stdout_stderr": "erawoiawof23",
             "output_data": [{
+                "creation": None,
                 "path": "iugbufuyfiutyfitfy",
                 "digest": "0123456789abcdef",
                 "metadata": {}
             }],
-            "timestamp": "2010-07-11T22:50:00",
+            "timestamp": "2010-07-11 22:50:00",
             "tags": ["abcd", "efgh", "ijklm", "tag with spaces"],
             "diff": "+++---",
             "user": "gnugynygy",
@@ -273,7 +279,7 @@ class RecordHandlerTest(BaseTestCase):
                 "path": "moh,oh",
                 "version": "liuhiuhiu",
                 "name": "mohuuyfbn",
-                "module": "ouitfvbtfky",
+                "module": "python",
                 "diff": "liugnig,lug",
                 "source": None,
             }],
@@ -299,10 +305,8 @@ class RecordHandlerTest(BaseTestCase):
 
         response = self.client.get(rec_uri, {}, **self.extra)
         self.assertEqual(response.status_code, OK)
-        # pprint(deunicode(json.loads(response.content)))
         new_record.update(project_id="TestProject")
         self.maxDiff = None
-        #import pdb; pdb.set_trace()
         self.assertEqual(new_record, deunicode(json.loads(response.content)))
 
     def test_PUT_existing_record_json(self):

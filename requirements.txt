@@ -1,8 +1,2 @@
-Django==1.6
-Sumatra==0.6.0
-django-registration==1.0
-django-tagging==0.3.1
-docutils==0.11
-httplib2==0.8
-parameters==0.2.1
-hg+https://bitbucket.org/apdavison/django-piston#egg=django_piston
+sumatra>0.6
+django-registration-redux==1.2
