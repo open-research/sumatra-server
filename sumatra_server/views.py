@@ -1,3 +1,10 @@
+"""
+Sumatra Server
+
+:copyright: Copyright 2010-2015 Andrew Davison
+:license: CeCILL, see COPYING for details.
+"""
+
 
 import json
 from django.http import (HttpResponse, JsonResponse,
@@ -26,7 +33,10 @@ media_type_abbreviations = {
     'json': 'application/json',
     'record-v3+json': 'application/vnd.sumatra.record-v3+json',
     'project-v3+json': 'application/vnd.sumatra.project-v3+json',
-    'project-list-v3+json': 'application/vnd.sumatra.project-list-v3+json,'
+    'project-list-v3+json': 'application/vnd.sumatra.project-list-v3+json',
+    'record-v4+json': 'application/vnd.sumatra.record-v4+json',
+    'project-v4+json': 'application/vnd.sumatra.project-v4+json',
+    'project-list-v4+json': 'application/vnd.sumatra.project-list-v4+json'
 }
 
 
@@ -112,8 +122,7 @@ class ResourceView(View):
 
 
 class RecordResource(ResourceView):
-    #preferred_media_type = 'application/vnd.sumatra.record-v3+json'
-    preferred_media_type = 'application/json'  # for backwards compatibility
+    preferred_media_type = 'application/vnd.sumatra.record-v4+json'
     serializer = RecordSerializer
 
     @check_permissions
@@ -134,7 +143,6 @@ class RecordResource(ResourceView):
     def put(self, request, *args, **kwargs):
         # this performs update if the record already exists, and create otherwise
         filter = {'project': kwargs["project"], 'label': kwargs["label"]}
-        #attrs = flatten_dict(request.PUT)
         attrs = json.loads(request.body)
         try:
             # need to check consistency between URL project, group, timestamp
@@ -191,8 +199,7 @@ class RecordResource(ResourceView):
 
 
 class ProjectResource(ResourceView):
-    #preferred_media_type = 'application/vnd.sumatra.project-v3+json'
-    preferred_media_type = 'application/json'  # for backwards compatibility
+    preferred_media_type = 'application/vnd.sumatra.project-v4+json'
     serializer = ProjectSerializer
 
     @check_permissions
@@ -231,8 +238,7 @@ class ProjectResource(ResourceView):
 
 
 class ProjectListResource(ResourceView):
-    #preferred_media_type = 'application/vnd.sumatra.project-list-3+json'
-    preferred_media_type = 'application/json'  # for backwards compatibility
+    preferred_media_type = 'application/vnd.sumatra.project-list-v4+json'
     serializer = ProjectListSerializer
 
     def get(self, request, *args, **kwargs):

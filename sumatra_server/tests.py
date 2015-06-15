@@ -63,7 +63,7 @@ class ProjectListHandlerTest(BaseTestCase):
         prj_list_uri = reverse("sumatra-project-list")
         response = self.client.get(prj_list_uri, {}, **self.extra)
         self.failUnlessEqual(response.status_code, OK)
-        self.assertMimeType(response, "application/json")
+        self.assertMimeType(response, "application/vnd.sumatra.project-list-v4+json")
         data = json.loads(response.content)
         assert isinstance(data, list)
         self.assertEqual(len(data), 2)
@@ -76,7 +76,7 @@ class ProjectListHandlerTest(BaseTestCase):
         prj_list_uri = reverse("sumatra-project-list")
         response = self.client.get(prj_list_uri, {})
         self.failUnlessEqual(response.status_code, OK)
-        self.assertMimeType(response, "application/json")
+        self.assertMimeType(response, "application/vnd.sumatra.project-list-v4+json")
         data = json.loads(response.content)
 
         self.assertEqual(len(data), 1)
@@ -98,7 +98,7 @@ class ProjectHandlerTest(BaseTestCase):
                           kwargs={"project": "TestProject"})
         response = self.client.get(prj_uri, {}, **self.extra)
         self.assertEqual(response.status_code, OK)
-        self.assertMimeType(response, "application/json")
+        self.assertMimeType(response, "application/vnd.sumatra.project-v4+json")
         data = json.loads(response.content)
         assert isinstance(data, dict)
         self.assertEqual(data["id"], "TestProject")
@@ -115,7 +115,7 @@ class ProjectHandlerTest(BaseTestCase):
                           kwargs={"project": "TestProject2"})
         response = self.client.get(prj_uri, {}, **self.extra)
         self.assertEqual(response.status_code, OK)
-        self.assertMimeType(response, "application/json")
+        self.assertMimeType(response, "application/vnd.sumatra.project-v4+json")
         data = json.loads(response.content)
         self.assertEqual(data["id"], "TestProject2")
         assert "anonymous" in data["access"]
@@ -159,7 +159,7 @@ class RecordHandlerTest(BaseTestCase):
                                   "label": label})
         response = self.client.get(rec_uri, {}, **self.extra)
         self.assertEqual(response.status_code, OK)
-        self.assertMimeType(response, "application/json")
+        self.assertMimeType(response, "application/vnd.sumatra.record-v4+json")
         data = json.loads(response.content)
         assert isinstance(data, dict)
         self.assertEqual(data["label"], label)
@@ -300,7 +300,7 @@ class RecordHandlerTest(BaseTestCase):
                           kwargs={"project": "TestProject"})
         rec_uri = "%s%s/" % (prj_uri, new_record["label"])
         response = self.client.put(rec_uri, data=json.dumps(new_record),
-                                   content_type="application/json", **self.extra)
+                                   content_type="application/vnd.sumatra.record-v4+json", **self.extra)
         self.assertEqual(response.status_code, CREATED)
 
         response = self.client.get(rec_uri, {}, **self.extra)
