@@ -1,7 +1,7 @@
 """
 Sumatra Server
 
-:copyright: Copyright 2010-2014 Andrew Davison
+:copyright: Copyright 2010-2015 Andrew Davison
 :license: CeCILL, see COPYING for details.
 """
 
@@ -28,7 +28,8 @@ def get_emitters_from_accept_header(request):
     possible_emitters = []
     if accept:
         logger.debug("ACCEPT:", accept)
-        accepted_contenttypes = (ct.split(";")[0] for ct in accept.split(","))  # need to handle wild-cards
+        accepted_contenttypes = (ct.split(";")[0]
+                                 for ct in accept.split(","))  # need to handle wild-cards
         for ct in accepted_contenttypes:
             if ct in available_emitters:
                 possible_emitters.append(available_emitters[ct])

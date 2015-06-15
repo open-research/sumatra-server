@@ -12,7 +12,8 @@ from django.views.generic import View
 from django.db.models import ForeignKey
 
 from sumatra.recordstore.django_store.models import Project, Record
-from serializers import RecordSerializer, ProjectSerializer, ProjectListSerializer
+from serializers import (RecordSerializer, ProjectSerializer, ProjectListSerializer,
+                         PermissionListSerializer)
 from authentication import AuthenticationDispatcher
 
 
@@ -251,12 +252,30 @@ class ProjectListResource(ResourceView):
 
 
 class PermissionListResource(ResourceView):
-    preferred_media_type = '?'
+    preferred_media_type = 'application/json'
+    serializer = PermissionListSerializer
 
+    @check_permissions
     def get(self, request, *args, **kwargs):
-        # <view logic>
-        return HttpResponse('result')
+        media_type = self.determine_media_type(request)
+        if media_type is None:
+            return HttpResponseNotAcceptable()
+        try:
+            project = Project.objects.get(id=kwargs["project"])
+        except Project.DoesNotExist:
+            return HttpResponseNotFound()
+        content = self.serializer(media_type).encode(project, request)
+        return HttpResponse(content, content_type="{}; charset=utf-8".format(media_type), status=200)
 
+    @check_permissions
     def post(self, request, *args, **kwargs):
-        pass
-
+        try:
+            project = Project.objects.get(id=project)
+        except models.Project.DoesNotExist:
+            return HttpResponseNotFound()
+        form = PermissionsForm(request.POST)
+        if form.is_valid():
+            prj.projectpermission_set.create(user=form.cleaned_data["user"])
+            return HttpResponseRedirect(reverse("sumatra-project", args=[prj.id]))
+        else:
+            return HttpBadResponse(form.errors)

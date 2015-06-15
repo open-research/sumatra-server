@@ -14,8 +14,9 @@ class RecordSerializer(object):
         self.media_type = media_type
 
     def encode(self, record, project, request=None):
-        if self.media_type in ('application/vnd.sumatra.record-v3+json',  # later can add support for multiple versions
+        if self.media_type in ('application/vnd.sumatra.record-v3+json',
                                'application/json'):
+            # later can add support for multiple versions
             data = serialization.record2dict(record.to_sumatra())
             data['project_id'] = project
             return json.dumps(data)
@@ -39,7 +40,9 @@ class ProjectSerializer(object):
 
     def encode(self, project, records, tags, request):
         protocol = request.is_secure() and "https" or "http"
-        project_uri = "%s://%s%s" % (protocol, request.get_host(), reverse("sumatra-project", args=[project.id]))
+        project_uri = "%s://%s%s" % (protocol,
+                                     request.get_host(),
+                                     reverse("sumatra-project", args=[project.id]))
         data = {
             'id': project.id,
             'name': project.get_name(),
@@ -49,10 +52,13 @@ class ProjectSerializer(object):
             'tags': tags,
             'user': request.user.username
         }
-        if request.user.username != 'anonymous':      # avoid non logged-in users harvesting usernames
-            data['access'] = [perm.user.username for perm in project.projectpermission_set.all()]
-        if self.media_type in ('application/vnd.sumatra.project-v3+json',  # later can add support for multiple versions
+        if request.user.username != 'anonymous':
+            # avoid non logged-in users harvesting usernames
+            data['access'] = [perm.user.username
+                              for perm in project.projectpermission_set.all()]
+        if self.media_type in ('application/vnd.sumatra.project-v3+json',
                                'application/json'):
+            # later can add support for multiple versions
             return self._encoder.encode(data)
         elif self.media_type == 'text/html':
             context = RequestContext(request, {"data": data})
@@ -75,11 +81,36 @@ class ProjectListSerializer(object):
                 "id": project.id,
                 "name": project.get_name(),
                 "description": project.description,
-                "uri": "%s://%s%s" % (protocol, request.get_host(), reverse("sumatra-project", args=[project.id])),
+                "uri": "%s://%s%s" % (protocol,
+                                      request.get_host(),
+                                      reverse("sumatra-project", args=[project.id])),
                 "last_updated": project.last_updated()
             } for project in projects]
-        if self.media_type in ('application/vnd.sumatra.project-list-v3+json',  # later can add support for multiple versions
+        if self.media_type in ('application/vnd.sumatra.project-list-v3+json',
                                'application/json'):
+            # later can add support for multiple versions
+            return self._encoder.encode(data)
+        elif self.media_type == 'text/html':
+            context = RequestContext(request, {"data": data})
+            return render_to_response(self.template, context_instance=context)
+        else:
+            raise ValueError("Unsupported media type")
+
+
+class PermissionListSerializer(object):
+    template = "project_permissions.html"
+
+    def __init__(self, media_type):
+        self.media_type = media_type
+        self._encoder = DjangoJSONEncoder(ensure_ascii=False)
+
+    def encode(self, project, request=None):
+        data = {
+            'id': project.id,
+            'name': project.get_name(),
+            'access': [perm.user for perm in project.projectpermission_set.all()],
+        }
+        if self.media_type == 'application/json':
             return self._encoder.encode(data)
         elif self.media_type == 'text/html':
             context = RequestContext(request, {"data": data})

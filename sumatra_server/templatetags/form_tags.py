@@ -1,7 +1,7 @@
 """
 Sumatra Server
 
-:copyright: Copyright 2010-2014 Andrew Davison
+:copyright: Copyright 2010-2015 Andrew Davison
 :license: CeCILL, see COPYING for details.
 """
 
