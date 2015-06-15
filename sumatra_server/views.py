@@ -14,9 +14,9 @@ from django.http import (HttpResponse, JsonResponse,
                          HttpResponseNotAllowed,     # 405
                          HttpResponseNotModified,    # 304
                          HttpResponseRedirect)       # 302
-
 from django.views.generic import View
 from django.db.models import ForeignKey
+from django.views.decorators.csrf import csrf_exempt
 
 from sumatra.recordstore.django_store.models import Project, Record
 from serializers import (RecordSerializer, ProjectSerializer, ProjectListSerializer,
@@ -139,6 +139,7 @@ class RecordResource(ResourceView):
         content = self.serializer(media_type).encode(record, kwargs['project'], request)
         return HttpResponse(content, content_type="{}; charset=utf-8".format(media_type), status=200)
 
+    @csrf_exempt
     @check_permissions
     def put(self, request, *args, **kwargs):
         # this performs update if the record already exists, and create otherwise
