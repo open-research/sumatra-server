@@ -277,6 +277,7 @@ class PermissionListResource(ResourceView):
         content = self.serializer(media_type).encode(project, request)
         return HttpResponse(content, content_type="{}; charset=utf-8".format(media_type), status=200)
 
+    @csrf_exempt   # should not be exempt when requesting text/html
     @check_permissions
     def post(self, request, *args, **kwargs):
         try:
