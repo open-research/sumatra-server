@@ -16,12 +16,14 @@ from django.http import (HttpResponse, JsonResponse,
                          HttpResponseRedirect)       # 302
 from django.views.generic import View
 from django.db.models import ForeignKey
+from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from sumatra.recordstore.django_store.models import Project, Record
 from serializers import (RecordSerializer, ProjectSerializer, ProjectListSerializer,
                          PermissionListSerializer)
 from authentication import AuthenticationDispatcher
+from forms import PermissionsForm
 
 
 class HttpResponseNotAcceptable(HttpResponse):
@@ -221,6 +223,7 @@ class ProjectResource(ResourceView):
         content = self.serializer(media_type).encode(project, records, tags, request)
         return HttpResponse(content, content_type="{}; charset=utf-8".format(media_type), status=200)
 
+    @csrf_exempt
     @check_permissions
     def put(self, request, *args, **kwargs):
         project, created = Project.objects.get_or_create(id=kwargs["project"])
@@ -232,7 +235,7 @@ class ProjectResource(ResourceView):
         if changed:
             project.save()
         if created:
-            #project.projectpermission_set.create(user=request.user)
+            project.projectpermission_set.create(user=request.user)
             return HttpResponse('', status=201)  # return newly created project?
         else:
             return HttpResponse('', status=200)
@@ -277,12 +280,12 @@ class PermissionListResource(ResourceView):
     @check_permissions
     def post(self, request, *args, **kwargs):
         try:
-            project = Project.objects.get(id=project)
-        except models.Project.DoesNotExist:
+            project = Project.objects.get(id=kwargs['project'])
+        except Project.DoesNotExist:
             return HttpResponseNotFound()
         form = PermissionsForm(request.POST)
         if form.is_valid():
-            prj.projectpermission_set.create(user=form.cleaned_data["user"])
-            return HttpResponseRedirect(reverse("sumatra-project", args=[prj.id]))
+            project.projectpermission_set.create(user=form.cleaned_data["user"])
+            return HttpResponseRedirect(reverse("sumatra-project", args=[project.id]))
         else:
-            return HttpBadResponse(form.errors)
+            return HttpResponseBadRequest(form.errors)
