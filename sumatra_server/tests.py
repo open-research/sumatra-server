@@ -149,6 +149,12 @@ class ProjectHandlerTest(BaseTestCase):
         response = self.client.get(prj_uri, {})
         self.assertEqual(response.status_code, NOT_FOUND)
 
+    def test_PUT_authenticated(self):
+        prj_uri = reverse("sumatra-project",
+                          kwargs={"project": "NewTestProject"})
+        response = self.client.put(prj_uri, {}, **self.extra)
+        self.assertEqual(response.status_code, CREATED)
+
 
 class RecordHandlerTest(BaseTestCase):
 

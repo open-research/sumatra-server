@@ -224,12 +224,15 @@ class ProjectResource(ResourceView):
         return HttpResponse(content, content_type="{}; charset=utf-8".format(media_type), status=200)
 
     @csrf_exempt
-    @check_permissions
     def put(self, request, *args, **kwargs):
+        auth = AuthenticationDispatcher()
+        authenticated = auth.is_authenticated(request)
+        if not authenticated:
+            return auth.challenge()
         project, created = Project.objects.get_or_create(id=kwargs["project"])
         changed = False
         for attr in ("name", "description"):
-            if attr in request.data:
+            if attr in request.body:
                 setattr(project, attr, request.data[attr])
                 changed = True
         if changed:
