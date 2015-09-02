@@ -2,7 +2,7 @@
 Sumatra Server
 
 :copyright: Copyright 2010-2015 Andrew Davison
-:license: CeCILL, see COPYING for details.
+:license: BSD 2-clause, see COPYING for details.
 """
 
 
