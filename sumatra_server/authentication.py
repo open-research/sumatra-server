@@ -9,6 +9,7 @@ Based on http://yml-blog.blogspot.com/2009/10/django-piston-authentication-again
 """
 
 import binascii
+import base64
 from django.conf import settings
 from django.http import HttpResponse
 from django.contrib.auth import authenticate
@@ -28,8 +29,9 @@ class HttpBasicAuthentication(object):
             (authmeth, auth) = auth_string.split(" ", 1)
             if not authmeth.lower() == 'basic':
                 return False
-            auth = auth.strip().decode('base64')
-            (username, password) = auth.split(':', 1)
+
+            auth = base64.b64decode(auth.strip()).decode('utf-8')
+            username, password = auth.split(':', 1)
         except (ValueError, binascii.Error):
             return False
         request.user = authenticate(username=username, password=password) or AnonymousUser()
@@ -59,7 +61,7 @@ class DjangoAuthentication(object):
 
     def is_authenticated(self, request):
         self.next = urlquote(request.get_full_path())
-        return request.user.is_authenticated()
+        return request.user.is_authenticated
 
     def challenge(self):
         """

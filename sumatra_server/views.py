@@ -16,14 +16,14 @@ from django.http import (HttpResponse, JsonResponse,
                          HttpResponseRedirect)       # 302
 from django.views.generic import View
 from django.db.models import ForeignKey
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from sumatra.recordstore.django_store.models import Project, Record
-from serializers import (RecordSerializer, ProjectSerializer, ProjectListSerializer,
+from .serializers import (RecordSerializer, ProjectSerializer, ProjectListSerializer,
                          PermissionListSerializer)
-from authentication import AuthenticationDispatcher
-from forms import PermissionsForm
+from .authentication import AuthenticationDispatcher
+from .forms import PermissionsForm
 
 
 class HttpResponseNotAcceptable(HttpResponse):
@@ -170,7 +170,7 @@ class RecordResource(ResourceView):
                       if field.name not in ('project', 'label', 'db_id', 'tags')]
             for field in fields:
                 if isinstance(field, ForeignKey):
-                    fk_model = field.rel.to
+                    fk_model = field.remote_field.model
                     obj_attrs = keys2str(attrs[field.name])
                     fk_inst, created = fk_model.objects.get_or_create(**obj_attrs)
                     setattr(inst, field.name, fk_inst)
@@ -231,8 +231,9 @@ class ProjectResource(ResourceView):
             return auth.challenge()
         project, created = Project.objects.get_or_create(id=kwargs["project"])
         changed = False
+        data = json.loads(request.body)
         for attr in ("name", "description"):
-            if attr in request.body:
+            if attr in data:
                 setattr(project, attr, request.data[attr])
                 changed = True
         if changed:

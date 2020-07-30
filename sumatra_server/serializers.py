@@ -7,9 +7,8 @@ Sumatra Server
 
 import json
 from django.core.serializers.json import DjangoJSONEncoder
-from django.core.urlresolvers import reverse
-from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.urls import reverse
+from django.shortcuts import render
 from sumatra.recordstore import serialization
 
 
@@ -31,8 +30,8 @@ class RecordSerializer(object):
                     entry.pop("creation")
             return json.dumps(data, indent=4)
         elif self.media_type == 'text/html':
-            context = RequestContext(request, {"data": record.to_sumatra()})
-            return render_to_response(self.template, context_instance=context)
+            context = {"data": record.to_sumatra()}
+            return render(request, self.template, context)
         else:
             raise ValueError("Unsupported media type")
 
@@ -72,8 +71,8 @@ class ProjectSerializer(object):
             # later can add support for multiple versions
             return self._encoder.encode(data)
         elif self.media_type == 'text/html':
-            context = RequestContext(request, {"data": data})
-            return render_to_response(self.template, context_instance=context)
+            context = {"data": data}
+            return render(request, self.template, context)
         else:
             raise ValueError("Unsupported media type")
 
@@ -103,8 +102,8 @@ class ProjectListSerializer(object):
             # later can add support for multiple versions
             return self._encoder.encode(data)
         elif self.media_type == 'text/html':
-            context = RequestContext(request, {"data": data})
-            return render_to_response(self.template, context_instance=context)
+            context = {"data": data}
+            return render(request, self.template, context)
         else:
             raise ValueError("Unsupported media type")
 
@@ -125,7 +124,7 @@ class PermissionListSerializer(object):
         if self.media_type == 'application/json':
             return self._encoder.encode(data)
         elif self.media_type == 'text/html':
-            context = RequestContext(request, {"data": data})
-            return render_to_response(self.template, context_instance=context)
+            context = {"data": data}
+            return render(request, self.template, context)
         else:
             raise ValueError("Unsupported media type")

@@ -1,61 +1,61 @@
 [
   {
-    "pk": 1, 
-    "model": "auth.user", 
+    "pk": 1,
+    "model": "auth.user",
     "fields": {
-      "username": "testuser", 
-      "first_name": "", 
-      "last_name": "", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "last_login": "2010-07-10 13:46:59", 
-      "groups": [], 
-      "user_permissions": [], 
-      "password": "sha1$da8f4$f2ed8e27968be8e958480efd9f2deb47c421cf9d", 
-      "email": "", 
+      "username": "testuser",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2010-07-10 13:46:59",
+      "groups": [],
+      "user_permissions": [],
+      "password": "pbkdf2_sha256$150000$6NULAzBRXtsZ$jGaw/hF/bxsLzxBMN/IpdoQI7LWSpj7hgatoUJZ+6AE=",
+      "email": "",
       "date_joined": "2010-07-10 13:46:59"
     }
-  }, 
+  },
   {
-    "pk": 2, 
-    "model": "auth.user", 
+    "pk": 2,
+    "model": "auth.user",
     "fields": {
-      "username": "anonymous", 
-      "first_name": "", 
-      "last_name": "", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "last_login": "2013-07-10 13:46:59", 
-      "groups": [], 
-      "user_permissions": [], 
-      "password": "", 
-      "email": "", 
+      "username": "anonymous",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2013-07-10 13:46:59",
+      "groups": [],
+      "user_permissions": [],
+      "password": "",
+      "email": "",
       "date_joined": "2013-07-10 13:46:59"
     }
   },
   {
-    "pk": 1, 
-    "model": "sumatra_server.projectpermission", 
+    "pk": 1,
+    "model": "sumatra_server.projectpermission",
     "fields": {
-      "project": "TestProject", 
+      "project": "TestProject",
       "user": 1
     }
   },
   {
-    "pk": 2, 
-    "model": "sumatra_server.projectpermission", 
+    "pk": 2,
+    "model": "sumatra_server.projectpermission",
     "fields": {
-      "project": "TestProject2", 
+      "project": "TestProject2",
       "user": 2
     }
   },
   {
-    "pk": 3, 
-    "model": "sumatra_server.projectpermission", 
+    "pk": 3,
+    "model": "sumatra_server.projectpermission",
     "fields": {
-      "project": "TestProject2", 
+      "project": "TestProject2",
       "user": 1
     }
   }

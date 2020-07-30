@@ -5,11 +5,11 @@ Sumatra Server
 :license: BSD 2-clause, see COPYING for details.
 """
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from sumatra_server.views import (RecordResource, ProjectResource,
                                   ProjectListResource, PermissionListResource)
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^$',
         ProjectListResource.as_view(),
         name="sumatra-project-list"),
@@ -22,4 +22,4 @@ urlpatterns = patterns('',
     url(r'^(?P<project>[^/]+)/(?P<label>\w+[\w|\-\.]*)/$',
         RecordResource.as_view(),
         name="sumatra-record"),
-)
+]

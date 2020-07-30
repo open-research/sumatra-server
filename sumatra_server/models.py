@@ -11,8 +11,8 @@ from sumatra.recordstore.django_store.models import Project
 
 
 class ProjectPermission(models.Model):
-    user = models.ForeignKey(User)
-    project = models.ForeignKey(Project)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return u"Permission: %s can access %s" % (self.user, self.project)

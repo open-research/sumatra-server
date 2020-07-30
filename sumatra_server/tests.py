@@ -5,8 +5,9 @@ Sumatra Server unit tests
 :license: BSD 2-clause, see COPYING for details.
 """
 
+from base64 import b64encode
 from django.test import TestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test.client import Client
 
 try:
@@ -23,21 +24,6 @@ NOT_FOUND = 404
 NO_CONTENT = 204
 
 
-def deunicode(v):
-    """Convert unicode keys and values to str"""
-    if isinstance(v, dict):
-        new_v = {}
-        for kk, vv in v.items():
-            new_v[str(kk)] = deunicode(vv)
-    elif isinstance(v, unicode):
-        new_v = str(v)
-    elif isinstance(v, list):
-        new_v = [deunicode(d) for d in v]
-    else:
-        new_v = v
-    return new_v
-
-
 class BaseTestCase(TestCase):
     fixtures = ['haggling', 'permissions']
 
@@ -45,8 +31,8 @@ class BaseTestCase(TestCase):
         # thanks to Thomas Pelletier for this function
         # http://thomas.pelletier.im/OK9/12/test-your-django-piston-api-with-auth/
         self.client = Client()
-        auth = '%s:%s' % ('testuser', 'abc123')
-        auth = 'Basic %s' % base64.encodestring(auth)
+        user_and_passwd = b64encode(b'%s:%s' % (b'testuser', b'abc123')).decode("ascii")
+        auth = 'Basic %s' % user_and_passwd
         auth = auth.strip()
         self.extra = {
             'HTTP_AUTHORIZATION': auth,
@@ -313,7 +299,7 @@ class RecordHandlerTest(BaseTestCase):
         self.assertEqual(response.status_code, OK)
         new_record.update(project_id="TestProject")
         self.maxDiff = None
-        self.assertEqual(new_record, deunicode(json.loads(response.content)))
+        self.assertEqual(new_record, json.loads(response.content))
 
     def test_PUT_existing_record_json(self):
         prj_uri = reverse("sumatra-project",
