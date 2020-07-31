@@ -11,7 +11,7 @@ setup(
     long_description = open("README.rst").read(),
     author = 'Andrew Davison',
     author_email = 'andrew.davison@unic.cnrs-gif.fr',
-    packages = ['sumatra_server', 'sumatra_server.templatetags'],
+    packages = ['sumatra_server', 'sumatra_server.templatetags', 'sumatra_server.migrations'],
     package_data = {'sumatra_server': ["templates/*.html", "fixtures/*.json"]},
     classifiers = [
         'Development Status :: 3 - Alpha',
