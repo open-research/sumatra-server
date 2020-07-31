@@ -1,7 +1,7 @@
 """
 Sumatra Server
 
-:copyright: Copyright 2010-2015 Andrew Davison
+:copyright: Copyright 2010-2020 Andrew Davison
 :license: BSD 2-clause, see COPYING for details.
 """
 
