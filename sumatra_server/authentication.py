@@ -22,16 +22,16 @@ class HttpBasicAuthentication(object):
     # based on the Django Piston package
 
     def is_authenticated(self, request):
-        auth_string = request.META.get('HTTP_AUTHORIZATION', None)
+        auth_string = request.META.get("HTTP_AUTHORIZATION", None)
         if not auth_string:
             return False
         try:
             (authmeth, auth) = auth_string.split(" ", 1)
-            if not authmeth.lower() == 'basic':
+            if not authmeth.lower() == "basic":
                 return False
 
-            auth = base64.b64decode(auth.strip()).decode('utf-8')
-            username, password = auth.split(':', 1)
+            auth = base64.b64decode(auth.strip()).decode("utf-8")
+            username, password = auth.split(":", 1)
         except (ValueError, binascii.Error):
             return False
         request.user = authenticate(username=username, password=password) or AnonymousUser()
@@ -39,12 +39,12 @@ class HttpBasicAuthentication(object):
 
     def challenge(self):
         resp = HttpResponse("Authorization Required")
-        resp['WWW-Authenticate'] = 'Basic realm="Sumatra Server API"'
+        resp["WWW-Authenticate"] = 'Basic realm="Sumatra Server API"'
         resp.status_code = 401
         return resp
 
     def __repr__(self):
-        return u'<HTTPBasic: realm=Sumatra Server API>'
+        return u"<HTTPBasic: realm=Sumatra Server API>"
 
 
 class DjangoAuthentication(object):
@@ -67,12 +67,12 @@ class DjangoAuthentication(object):
         """
         Redirect to the login page.
         """
-        return HttpResponseRedirect('%s?%s=%s' % (
-            self.login_url, self.redirect_field_name, self.next))
+        return HttpResponseRedirect(
+            "%s?%s=%s" % (self.login_url, self.redirect_field_name, self.next)
+        )
 
 
 class AuthenticationDispatcher(object):
-
     def is_authenticated(self, request):
         session = request.session.session_key
         if session:

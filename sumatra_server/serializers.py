@@ -19,17 +19,19 @@ class RecordSerializer(object):
         self.media_type = media_type
 
     def encode(self, record, project, request=None):
-        if self.media_type in ('application/vnd.sumatra.record-v3+json',
-                               'application/vnd.sumatra.record-v4+json',
-                               'application/json'):
+        if self.media_type in (
+            "application/vnd.sumatra.record-v3+json",
+            "application/vnd.sumatra.record-v4+json",
+            "application/json",
+        ):
             # later can add support for multiple versions
             data = serialization.record2dict(record.to_sumatra())
-            data['project_id'] = project
-            if self.media_type == 'application/vnd.sumatra.record-v3+json':
-                for entry in data['output_data']:
+            data["project_id"] = project
+            if self.media_type == "application/vnd.sumatra.record-v3+json":
+                for entry in data["output_data"]:
                     entry.pop("creation")
             return json.dumps(data, indent=4)
-        elif self.media_type == 'text/html':
+        elif self.media_type == "text/html":
             context = {"data": record.to_sumatra()}
             return render(request, self.template, context)
         else:
@@ -49,28 +51,30 @@ class ProjectSerializer(object):
 
     def encode(self, project, records, tags, request):
         protocol = request.is_secure() and "https" or "http"
-        project_uri = "%s://%s%s" % (protocol,
-                                     request.get_host(),
-                                     reverse("sumatra-project", args=[project.id]))
+        project_uri = "%s://%s%s" % (
+            protocol,
+            request.get_host(),
+            reverse("sumatra-project", args=[project.id]),
+        )
         data = {
-            'id': project.id,
-            'name': project.get_name(),
-            'description': project.description,
-            'records': ["%s%s/" % (project_uri, rec.label)
-                        for rec in records],
-            'tags': tags,
-            'user': request.user.username
+            "id": project.id,
+            "name": project.get_name(),
+            "description": project.description,
+            "records": ["%s%s/" % (project_uri, rec.label) for rec in records],
+            "tags": tags,
+            "user": request.user.username,
         }
-        if request.user.username != 'anonymous':
+        if request.user.username != "anonymous":
             # avoid non logged-in users harvesting usernames
-            data['access'] = [perm.user.username
-                              for perm in project.projectpermission_set.all()]
-        if self.media_type in ('application/vnd.sumatra.project-v3+json',
-                               'application/vnd.sumatra.project-v4+json',
-                               'application/json'):
+            data["access"] = [perm.user.username for perm in project.projectpermission_set.all()]
+        if self.media_type in (
+            "application/vnd.sumatra.project-v3+json",
+            "application/vnd.sumatra.project-v4+json",
+            "application/json",
+        ):
             # later can add support for multiple versions
             return self._encoder.encode(data)
-        elif self.media_type == 'text/html':
+        elif self.media_type == "text/html":
             context = {"data": data}
             return render(request, self.template, context)
         else:
@@ -91,17 +95,20 @@ class ProjectListSerializer(object):
                 "id": project.id,
                 "name": project.get_name(),
                 "description": project.description,
-                "uri": "%s://%s%s" % (protocol,
-                                      request.get_host(),
-                                      reverse("sumatra-project", args=[project.id])),
-                "last_updated": project.last_updated()
-            } for project in projects]
-        if self.media_type in ('application/vnd.sumatra.project-list-v3+json',
-                               'application/vnd.sumatra.project-list-v4+json',
-                               'application/json'):
+                "uri": "%s://%s%s"
+                % (protocol, request.get_host(), reverse("sumatra-project", args=[project.id])),
+                "last_updated": project.last_updated(),
+            }
+            for project in projects
+        ]
+        if self.media_type in (
+            "application/vnd.sumatra.project-list-v3+json",
+            "application/vnd.sumatra.project-list-v4+json",
+            "application/json",
+        ):
             # later can add support for multiple versions
             return self._encoder.encode(data)
-        elif self.media_type == 'text/html':
+        elif self.media_type == "text/html":
             context = {"data": data}
             return render(request, self.template, context)
         else:
@@ -117,13 +124,13 @@ class PermissionListSerializer(object):
 
     def encode(self, project, request=None):
         data = {
-            'id': project.id,
-            'name': project.get_name(),
-            'access': [perm.user for perm in project.projectpermission_set.all()],
+            "id": project.id,
+            "name": project.get_name(),
+            "access": [perm.user for perm in project.projectpermission_set.all()],
         }
-        if self.media_type == 'application/json':
+        if self.media_type == "application/json":
             return self._encoder.encode(data)
-        elif self.media_type == 'text/html':
+        elif self.media_type == "text/html":
             context = {"data": data}
             return render(request, self.template, context)
         else:
