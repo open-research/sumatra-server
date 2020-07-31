@@ -76,39 +76,56 @@ def check_permissions(func):
     return wrapper
 
 
+def parse_accept_header(accept):
+    accepted_media_types = []
+    if accept:
+        qualities = []
+        for mtwq in accept.split(","):
+            if ";" in mtwq:
+                parts = mtwq.split(";")
+                if len(parts) == 2:
+                    mt, q = parts
+                else:
+                    mt = parts[0]
+                    for part in parts[1:]:
+                        if "q" in part:
+                            q = part
+                            break
+                    q = "q=1"
+            else:
+                mt, q = mtwq, "q=1"
+            accepted_media_types.append(mt.strip())
+            qualities.append(float(q.split("=")[1]))
+        accepted_media_types = [mt for q, mt in sorted(zip(qualities, accepted_media_types),
+                                                       reverse=True)]
+    return accepted_media_types
+
+
+def get_accepted_media_types(request):
+    if "format" in request.GET:
+        # 'format' in the URL over-rides the Accept header
+        abbrev = request.GET['format']
+        accepted_media_types = [media_type_abbreviations[abbrev]]
+    else:
+        # get mimetype from Accept header
+        if 'HTTP_ACCEPT' in request.META:
+            accept = request.META['HTTP_ACCEPT']
+        elif 'Accept' in request.META:
+            accept = request.META['Accept']
+        else:
+            accept = ""
+        accepted_media_types = parse_accept_header(accept)
+    return accepted_media_types
+
+
 class ResourceView(View):
     """
     View subclass which determines the best media type to send.
     """
 
-    def get_accepted_media_types(self, request):
-        if "format" in request.GET:
-            # 'format' in the URL over-rides the Accept header
-            abbrev = request.GET['format']
-            accepted_media_types = [media_type_abbreviations[abbrev]]
-        else:
-            # get mimetype from Accept header
-            if 'HTTP_ACCEPT' in request.META:
-                accept = request.META['HTTP_ACCEPT']
-            elif 'Accept' in request.META:
-                accept = request.META['Accept']
-            else:
-                accept = ""
-            accepted_media_types = []
-            if accept:
-                qualities = []
-                for mtwq in accept.split(","):
-                    q = "q=1"
-                    if ";" in mtwq:
-                        mt, q = mtwq.split(";")  # this assumes only "q" parameter is present, not others such as "level"
-                    accepted_media_types.append(mtwq.strip())
-                    qualities.append(float(q.split("=")[1]))
-                accepted_media_types = [mt for q, mt in sorted(zip(qualities, accepted_media_types))]
-        return accepted_media_types
-
     def determine_media_type(self, request):
         # todo: handle partial wildcards in accepted media types
-        accepted_media_types = self.get_accepted_media_types(request)
+        accepted_media_types = get_accepted_media_types(request)
         if accepted_media_types:
             possible_media_types = [self.preferred_media_type, 'application/json', 'text/html']
             for mt in accepted_media_types:

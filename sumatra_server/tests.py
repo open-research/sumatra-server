@@ -16,6 +16,8 @@ except ImportError:
     import django.utils.simplejson as json
 import base64
 
+from sumatra_server.views import parse_accept_header
+
 
 OK = 200
 CREATED = 201
@@ -346,3 +348,15 @@ class RecordHandlerTest(BaseTestCase):
                                   "label": label})
         response = self.client.delete(rec_uri, {}, **self.extra)
         self.assertEqual(response.status_code, NOT_FOUND)
+
+
+class UtilityFunctionTest(TestCase):
+
+    def test_parse_accept_header(self):
+        example_safari = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+        expected = ["text/html", "application/xhtml+xml", "application/xml", "*/*"]
+        self.assertEqual(parse_accept_header(example_safari), expected)
+
+        example_chrome = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
+        expected = ["text/html", "image/webp", "image/apng", "application/xhtml+xml", "application/signed-exchange", "application/xml", "*/*"]
+        self.assertEqual(parse_accept_header(example_chrome), expected)
